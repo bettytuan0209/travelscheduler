@@ -1,3 +1,4 @@
+package activities;
 import java.util.ArrayList;
 
 import org.jgraph.graph.Edge;

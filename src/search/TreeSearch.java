@@ -7,10 +7,14 @@ public class TreeSearch {
 	private StatesContainer states;
 	private int numExpanded;
 
-	public TreeSearch(SearchState root) {
-		states.add(root);
+	public TreeSearch(StatesContainer states, SearchState initial) {
+		states.add(initial);
+		this.states = states;
 		numExpanded = 0;
+	}
 
+	public int getNumExpanded() {
+		return numExpanded;
 	}
 
 	public SearchState nextGoal() {
@@ -32,7 +36,4 @@ public class TreeSearch {
 		return result;
 	}
 
-	public int getNumExpanded() {
-		return numExpanded;
-	}
 }
