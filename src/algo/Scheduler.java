@@ -1,16 +1,19 @@
 package algo;
-import java.util.ArrayList;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import search.AStar;
 import search.TreeSearch;
 import state.SchedulingState;
 import time.TimeBlock;
+import activities.ActivitySpanningTree;
 
 public class Scheduler {
 
-	public boolean scheduleAll(ArrayList<TimeBlock> timeblocks) {
-		for (TimeBlock timeblock : timeblocks) {
-			if (!schedule(timeblock)) {
+	public boolean scheduleAll(HashMap<TimeBlock, ActivitySpanningTree> pairs) {
+		for (Map.Entry<TimeBlock, ActivitySpanningTree> pair : pairs.entrySet()) {
+			if (!schedule(pair.getKey(), pair.getValue())) {
 				return false;
 			}
 
@@ -18,10 +21,10 @@ public class Scheduler {
 		return true;
 	}
 
-	public boolean schedule(TimeBlock timeblock) {
+	public boolean schedule(TimeBlock timeblock, ActivitySpanningTree ast) {
 
 		// construct the initial state
-		SchedulingState root = new SchedulingState(timeblock);
+		SchedulingState root = new SchedulingState(timeblock, ast);
 
 		TreeSearch searcher = new TreeSearch(new AStar(), root);
 

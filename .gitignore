@@ -1,6 +1,7 @@
-*.class
-
-# Package Files #
-*.jar
-*.war
-*.ear
+bin/
+.gitignore
+.DS_Store
+.classpath
+.project
+.settings/
+/bin
