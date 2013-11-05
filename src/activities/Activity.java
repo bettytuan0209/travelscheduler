@@ -8,9 +8,11 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.MutableInterval;
 
-public class Activity implements Serializable {
+import time.Schedulable;
+
+public class Activity extends Schedulable implements Serializable {
 	private static final long serialVersionUID = -17837538834918894L;
-	private Duration duration;
+	// protected Timeline legalTimes;
 	protected TreeMap<DateTime, MutableInterval> legalTimes;
 	private Location location;
 
