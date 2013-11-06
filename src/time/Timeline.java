@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.joda.time.Interval;
 
 public class Timeline {
@@ -13,27 +14,91 @@ public class Timeline {
 	private TreeMap<DateTime, Schedulable> schedule;
 	
 	public Timeline(Interval interval) {
-		this.interval = interval;
+		// add 1 milliseconds in default to make interval inclusive of end time
+		this.interval = new Interval(interval.getStartMillis(),
+				interval.getEndMillis() + 1);
 		schedule = new TreeMap<DateTime, Schedulable>();
 	}
 	
-	public boolean scheduleAfter(DateTime startTime, Schedulable schedulable) {
+	public Timeline(TreeMap<DateTime, Schedulable> schedule) {
+		this.schedule = schedule;
+		interval = new Interval(schedule.firstKey(),
+				getEndTime(schedule.lastEntry()));
+	}
+	
+	public boolean scheduleAfter(DateTime bound, Timeline legalTimes,
+			Schedulable schedulable) {
+		DateTime earliestStart = earliestSchedulableLegalAfter(bound,
+				legalTimes, schedulable);
+		return schedule(earliestStart, schedulable);
+	}
+	
+	public DateTime earliestSchedulableLegalAfter(DateTime bound,
+			Timeline legalTimes, Schedulable schedulable) {
+		DateTime start;
 		
-		// if the earliest possible time
-		// if it's after startTime
-		// find transportation time
-		// if the duration of transportation and activity fits
-		// insert and return true
+		// check boundary conditions
+		if (legalTimes.schedule.isEmpty()) {
+			return null;
+		}
 		
-		return false;
+		start = later(bound, legalTimes.schedule.firstKey());
+		
+		Iterator<Map.Entry<DateTime, Schedulable>> legalItr = legalTimes.schedule
+				.entrySet().iterator();
+		Iterator<Map.Entry<DateTime, Schedulable>> scheduledItr = schedule
+				.entrySet().iterator();
+		
+		Map.Entry<DateTime, Schedulable> legal = null;
+		Map.Entry<DateTime, Schedulable> scheduled = null;
+		
+		while (true) {
+			// out of the interval of this timeline
+			if (start.isAfter(interval.getEnd())) {
+				return null;
+			}
+			if (legal == null
+					|| getEndTime(legal).isBefore(start)
+					|| new Duration(start, getEndTime(legal))
+							.isShorterThan(schedulable.duration)) {
+				if (legalItr.hasNext()) {
+					legal = legalItr.next();
+					start = legal.getKey();
+					continue;
+				} else {
+					return null;
+				}
+			}
+			
+			if (scheduled == null
+					|| isInclusiveBefore(getEndTime(scheduled), start)) {
+				if (scheduledItr.hasNext()) {
+					scheduled = scheduledItr.next();
+					continue;
+				}
+			}
+			if (scheduled == null) {
+				return start;
+			} else if (start.isBefore(scheduled.getKey())) {
+				if (!new Duration(start, scheduled.getKey())
+						.isShorterThan(schedulable.duration)) {
+					return start;
+				}
+			} else {
+				
+				start = getEndTime(scheduled);
+				continue;
+			}
+		}
+		
 	}
 	
 	public boolean schedule(DateTime startTime, Schedulable schedulable) {
-		// check if within the interval of this timeline
+		Interval toSchedule = new Interval(startTime, getEndTime(startTime,
+				schedulable));
 		
-		if (isInclusiveAfter(startTime, interval.getStart())
-				&& isInclusiveBefore(startTime.plus(schedulable.duration),
-						interval.getEnd())) {
+		// check if within the interval of this timeline
+		if (interval.contains(toSchedule)) {
 			
 			Map.Entry<DateTime, Schedulable> lastEntry = schedule.lastEntry();
 			
@@ -48,22 +113,19 @@ public class Timeline {
 						.entrySet().iterator();
 				while (itr.hasNext()) {
 					Map.Entry<DateTime, Schedulable> entry = itr.next();
+					Interval scheduled = new Interval(entry.getKey()
+							.getMillis(), getEndTime(entry).getMillis());
 					
-					// occurs before this scheduled event
-					if (startTime.isBefore(entry.getKey())) {
-						
-						// enough time to stick in between
-						if (getEndTime(startTime, schedulable).isBefore(
-								entry.getKey())) {
-							schedule.put(startTime, schedulable);
-							return true;
-						} else {
-							return false;
-						}
-					} else if (startTime.isBefore(getEndTime(entry))) {
-						// occurs during this scheduled event
+					if (scheduled.overlaps(toSchedule)) {
 						return false;
 					}
+					// occurs before this scheduled event
+					if (isInclusiveBefore(toSchedule.getEnd(),
+							scheduled.getStart())) {
+						schedule.put(startTime, schedulable);
+						return true;
+					}
+					
 				}
 			}
 		}
@@ -90,4 +152,13 @@ public class Timeline {
 	private boolean isInclusiveAfter(DateTime first, DateTime second) {
 		return first.isEqual(second) || first.isAfter(second);
 	}
+	
+	private DateTime later(DateTime first, DateTime second) {
+		if (first.isAfter(second)) {
+			return first;
+		} else {
+			return second;
+		}
+	}
+	
 }

@@ -25,7 +25,8 @@ public class TimeBlock implements Serializable {
 	
 	public boolean scheduleAfter(DateTime startTime, Activity activity) {
 		// try to schedule it
-		return scheduledActivities.scheduleAfter(startTime, activity);
+		return scheduledActivities.scheduleAfter(startTime,
+				activity.getLegalTimes(), activity);
 	}
 	
 	public boolean scheduleAfter(Activity activity) {

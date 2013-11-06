@@ -12,6 +12,19 @@ public class TimelineTest {
 	Timeline timeline;
 	
 	@Test
+	public void earliestSchedulableLegalAfterTest() {
+		timeline = new Timeline(new Interval(1, 10));
+		
+		// out of range
+		Activity activity = new Activity(new Duration(20));
+		Assert.assertNull(timeline.earliestSchedulableLegalAfter(
+				new DateTime(0), activity.getLegalTimes(), activity));
+		activity = new Activity(new Duration(0));
+		Assert.assertNull(timeline.earliestSchedulableLegalAfter(new DateTime(
+				11), activity.getLegalTimes(), activity));
+	}
+	
+	@Test
 	public void scheduleTest() {
 		timeline = new Timeline(new Interval(1, 10));
 		
@@ -41,7 +54,7 @@ public class TimelineTest {
 		
 		// fill the timeline
 		Assert.assertTrue(timeline.schedule(new DateTime(3), new Activity(
-				new Duration(5))));
+				new Duration(2))));
 		
 	}
 	
