@@ -19,21 +19,22 @@ public class SchedulingState implements SearchState,
 		// create an initial state based on the paired TB and AST given
 		this.tb = tb;
 		this.ast = ast;
-		
-		// schedule startLocation at the beginning of the interval
-		Activity start = new Activity(new Duration(0), tb.getStartLocation());
-		tb.scheduleAfter(start);
 	}
 	
 	@Override
 	public ArrayList<SearchState> successors() {
 		ArrayList<SearchState> successors = new ArrayList<SearchState>();
 		
+		// if nothing scheduled yet, schedule startLocation
+		Activity start = new Activity("At start location", new Duration(0),
+				tb.getStartLocation());
+		tb.scheduleAfter(start);
+		
 		// if out of activities, schedule to return to endLocation
 		if (ast.getActivities().isEmpty()) {
-			SchedulingState newState = (SchedulingState) DeepCopy.copy(this);
-			Activity end = new Activity(new Duration(1), tb.getEndLocation());
-			tb.scheduleAfter(end);
+			Activity end = new Activity("At end location", new Duration(1),
+					tb.getEndLocation());
+			tb.scheduleAfterTb(end);
 			return successors;
 		}
 		
@@ -64,7 +65,7 @@ public class SchedulingState implements SearchState,
 		// and check if still have enough time to schedule it
 		DateTime earliestFree = tb.lastEndTime();
 		for (Activity activity : ast.getActivities()) {
-			activity.setEarlistStartTime(earliestFree);
+			activity.setEarliestStartTime(earliestFree);
 			if (!activity.enoughLegalTimes()) {
 				return false;
 			}

@@ -1,5 +1,6 @@
 package time;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -8,7 +9,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 
-public class Timeline {
+public class Timeline implements Serializable {
 	private static final long serialVersionUID = -7686653954597194859L;
 	private Interval interval;
 	private TreeMap<DateTime, Schedulable> schedule;
@@ -24,6 +25,19 @@ public class Timeline {
 		this.schedule = schedule;
 		interval = new Interval(schedule.firstKey(),
 				getEndTime(schedule.lastEntry()));
+	}
+	
+	public boolean containsSchedulableWithDuration(Duration duration) {
+		
+		Iterator<Map.Entry<DateTime, Schedulable>> itr = schedule.entrySet()
+				.iterator();
+		
+		while (itr.hasNext()) {
+			if (!itr.next().getValue().duration.isShorterThan(duration)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public boolean scheduleAfter(DateTime bound, Timeline legalTimes,
@@ -71,7 +85,8 @@ public class Timeline {
 			}
 			
 			if (scheduled == null
-					|| isInclusiveBefore(getEndTime(scheduled), start)) {
+					|| (isInclusiveBefore(getEndTime(scheduled), start) && scheduled
+							.getKey().isBefore(start))) {
 				if (scheduledItr.hasNext()) {
 					scheduled = scheduledItr.next();
 					continue;
@@ -84,8 +99,9 @@ public class Timeline {
 						.isShorterThan(schedulable.duration)) {
 					return start;
 				}
+			} else if (start.isEqual(scheduled.getKey())) {
+				start = start.plus(1);
 			} else {
-				
 				start = getEndTime(scheduled);
 				continue;
 			}
@@ -104,7 +120,8 @@ public class Timeline {
 			
 			// check if nothing scheduled or after last scheduled event
 			if (lastEntry == null
-					|| isInclusiveAfter(startTime, getEndTime(lastEntry))) {
+					|| (isInclusiveAfter(startTime, getEndTime(lastEntry)) && startTime
+							.isAfter(lastEntry.getKey()))) {
 				schedule.put(startTime, schedulable);
 				return true;
 				
@@ -120,8 +137,7 @@ public class Timeline {
 						return false;
 					}
 					// occurs before this scheduled event
-					if (isInclusiveBefore(toSchedule.getEnd(),
-							scheduled.getStart())) {
+					if (toSchedule.getEnd().isBefore(scheduled.getStart())) {
 						schedule.put(startTime, schedulable);
 						return true;
 					}
@@ -133,8 +149,41 @@ public class Timeline {
 		return false;
 	}
 	
+	public Map.Entry<DateTime, Schedulable> unscheduleBefore(DateTime start) {
+		Iterator<Map.Entry<DateTime, Schedulable>> itr = schedule.entrySet()
+				.iterator();
+		while (itr.hasNext()) {
+			Map.Entry<DateTime, Schedulable> scheduled = itr.next();
+			if (!scheduled.getKey().isBefore(start)) {
+				return null;
+			} else if (!getEndTime(scheduled).isAfter(start)) {
+				schedule.remove(scheduled.getKey());
+			} else {
+				return scheduled;
+			}
+		}
+		
+		return null;
+	}
+	
+	public Schedulable unschedule(DateTime start) {
+		return schedule.remove(start);
+	}
+	
+	public boolean hasScheduleStart(DateTime start) {
+		return schedule.containsKey(start);
+	}
+	
 	public DateTime lastEndTime() {
 		return getEndTime(schedule.lastEntry());
+	}
+	
+	public int getNumActivities() {
+		return schedule.size();
+	}
+	
+	public boolean isEmpty() {
+		return schedule.size() == 0;
 	}
 	
 	private DateTime getEndTime(Map.Entry<DateTime, Schedulable> entry) {
@@ -159,6 +208,14 @@ public class Timeline {
 		} else {
 			return second;
 		}
+	}
+	
+	public Interval getInterval() {
+		return interval;
+	}
+	
+	public TreeMap<DateTime, Schedulable> getSchedule() {
+		return schedule;
 	}
 	
 }

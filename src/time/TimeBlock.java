@@ -20,7 +20,8 @@ public class TimeBlock implements Serializable {
 		this.index = index;
 		this.startLocation = startLocation;
 		this.endLocation = endLocation;
-		scheduledActivities = new Timeline(timespan);
+		this.scheduledActivities = new Timeline(new Interval(timespan));
+		
 	}
 	
 	public boolean scheduleAfter(DateTime startTime, Activity activity) {
@@ -33,8 +34,43 @@ public class TimeBlock implements Serializable {
 		return scheduleAfter(new DateTime(0), activity);
 	}
 	
+	public boolean scheduleBeforeTb(Activity activity) {
+		// sanitation check for duration overflow
+		if (activity.duration.getMillis() > 1) {
+			return false;
+		}
+		
+		DateTime beforeInterval = scheduledActivities.getInterval().getStart()
+				.minus(1);
+		if (scheduledActivities.hasScheduleStart(beforeInterval)) {
+			return false;
+		} else {
+			scheduledActivities.schedule(beforeInterval, activity);
+			return true;
+		}
+	}
+	
+	public boolean scheduleAfterTb(Activity activity) {
+		// sanitation check for duration overflow
+		if (activity.duration.getMillis() > 1) {
+			return false;
+		}
+		DateTime afterInterval = scheduledActivities.getInterval().getEnd()
+				.plus(1);
+		if (scheduledActivities.hasScheduleStart(afterInterval)) {
+			return false;
+		} else {
+			scheduledActivities.schedule(afterInterval, activity);
+			return true;
+		}
+	}
+	
 	public DateTime lastEndTime() {
 		return scheduledActivities.lastEndTime();
+	}
+	
+	public int getIndex() {
+		return index;
 	}
 	
 	public Location getStartLocation() {

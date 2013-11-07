@@ -59,6 +59,15 @@ public class TimelineTest {
 	}
 	
 	@Test
+	public void unscheduleTest() {
+		timeline = new Timeline(new Interval(1, 10));
+		Activity activity = new Activity(new Duration(0));
+		Assert.assertTrue(timeline.schedule(new DateTime(1), activity));
+		Assert.assertEquals(activity, timeline.unschedule(new DateTime(1)));
+		
+	}
+	
+	@Test
 	public void lastEndTimeTest() {
 		timeline = new Timeline(new Interval(1, 10));
 		
