@@ -8,6 +8,8 @@ import org.jgraph.graph.Edge;
 import org.jgrapht.graph.SimpleGraph;
 import org.joda.time.Duration;
 
+import schedulable.Activity;
+
 public class ActivitySpanningTree implements Serializable {
 	private static final long serialVersionUID = 6797165864508180241L;
 	public int index;

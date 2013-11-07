@@ -1,8 +1,6 @@
-package search;
+package state;
 
 import java.util.Collection;
-
-import state.SearchState;
 
 public interface StatesContainer {
 

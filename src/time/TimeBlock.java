@@ -5,7 +5,7 @@ import java.io.Serializable;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
-import activities.Activity;
+import schedulable.Activity;
 import activities.Location;
 
 public class TimeBlock implements Serializable {
@@ -27,7 +27,7 @@ public class TimeBlock implements Serializable {
 	public boolean scheduleAfter(DateTime startTime, Activity activity) {
 		// try to schedule it
 		return scheduledActivities.scheduleAfter(startTime,
-				activity.getLegalTimes(), activity);
+				activity.getLegalTimeline(), activity);
 	}
 	
 	public boolean scheduleAfter(Activity activity) {
@@ -36,7 +36,7 @@ public class TimeBlock implements Serializable {
 	
 	public boolean scheduleBeforeTb(Activity activity) {
 		// sanitation check for duration overflow
-		if (activity.duration.getMillis() > 1) {
+		if (activity.getDuration().getMillis() > 1) {
 			return false;
 		}
 		
@@ -52,7 +52,7 @@ public class TimeBlock implements Serializable {
 	
 	public boolean scheduleAfterTb(Activity activity) {
 		// sanitation check for duration overflow
-		if (activity.duration.getMillis() > 1) {
+		if (activity.getDuration().getMillis() > 1) {
 			return false;
 		}
 		DateTime afterInterval = scheduledActivities.getInterval().getEnd()

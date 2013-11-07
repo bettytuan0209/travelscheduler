@@ -6,7 +6,7 @@ import org.joda.time.Interval;
 import org.junit.Assert;
 import org.junit.Test;
 
-import activities.Activity;
+import schedulable.Activity;
 
 public class TimelineTest {
 	Timeline timeline;
@@ -18,10 +18,10 @@ public class TimelineTest {
 		// out of range
 		Activity activity = new Activity(new Duration(20));
 		Assert.assertNull(timeline.earliestSchedulableLegalAfter(
-				new DateTime(0), activity.getLegalTimes(), activity));
+				new DateTime(0), activity.getLegalTimeline(), activity));
 		activity = new Activity(new Duration(0));
 		Assert.assertNull(timeline.earliestSchedulableLegalAfter(new DateTime(
-				11), activity.getLegalTimes(), activity));
+				11), activity.getLegalTimeline(), activity));
 	}
 	
 	@Test

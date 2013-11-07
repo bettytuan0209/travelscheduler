@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
+import schedulable.Activity;
 import time.TimeBlock;
 import util.DeepCopy;
-import activities.Activity;
 import activities.ActivitySpanningTree;
 
 public class SchedulingState implements SearchState,
@@ -65,8 +65,8 @@ public class SchedulingState implements SearchState,
 		// and check if still have enough time to schedule it
 		DateTime earliestFree = tb.lastEndTime();
 		for (Activity activity : ast.getActivities()) {
-			activity.setEarliestStartTime(earliestFree);
-			if (!activity.enoughLegalTimes()) {
+			activity.getLegalTimeline().setEarliestAvailable(earliestFree);
+			if (!activity.forwardChecking()) {
 				return false;
 			}
 			
