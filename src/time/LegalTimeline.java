@@ -23,6 +23,17 @@ public class LegalTimeline extends Timeline {
 		super(schedule);
 	}
 	
+	@Override
+	public boolean schedule(DateTime startTime, Schedulable legalTime) {
+		if (!(legalTime instanceof LegalTime)) {
+			throw new ClassCastException(
+					"Cannot type cast schedulable to LegalTime");
+		}
+		
+		return privateSchedule(startTime, legalTime);
+		
+	}
+	
 	public boolean setEarliestAvailable(DateTime start) {
 		Iterator<Map.Entry<DateTime, Schedulable>> itr = schedule.entrySet()
 				.iterator();

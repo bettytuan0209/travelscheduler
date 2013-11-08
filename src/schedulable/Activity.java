@@ -12,9 +12,9 @@ import activities.Location;
 
 public class Activity extends Schedulable implements Serializable {
 	private static final long serialVersionUID = -17837538834918894L;
-	private String title;
+	public String title;
+	public Location location;
 	private LegalTimeline legalTimeline;
-	private Location location;
 	
 	public Activity(Duration duration) {
 		this.duration = duration;
@@ -62,10 +62,6 @@ public class Activity extends Schedulable implements Serializable {
 	
 	public LegalTimeline getLegalTimeline() {
 		return legalTimeline;
-	}
-	
-	public String getTitle() {
-		return title;
 	}
 	
 }

@@ -28,8 +28,12 @@ public class Timeline implements Serializable {
 	
 	public Timeline(TreeMap<DateTime, Schedulable> schedule) {
 		this.schedule = schedule;
-		interval = new Interval(schedule.firstKey(), Util.getEndTime(schedule
-				.lastEntry()));
+		if (schedule.isEmpty()) {
+			interval = new Interval(0, 0);
+		} else {
+			interval = new Interval(schedule.firstKey(),
+					Util.getEndTime(schedule.lastEntry()));
+		}
 	}
 	
 	// public boolean containsSchedulableWithDuration(Duration duration) {
@@ -123,6 +127,11 @@ public class Timeline implements Serializable {
 	}
 	
 	public boolean schedule(DateTime startTime, Schedulable schedulable) {
+		return privateSchedule(startTime, schedulable);
+	}
+	
+	protected boolean privateSchedule(DateTime startTime,
+			Schedulable schedulable) {
 		Interval toSchedule = new Interval(startTime, Util.getEndTime(
 				startTime, schedulable));
 		
