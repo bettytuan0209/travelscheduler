@@ -211,7 +211,7 @@ public class Timeline implements Serializable {
 		}
 	}
 	
-	public int getNumActivities() {
+	public int getNumScheduled() {
 		return schedule.size();
 	}
 	

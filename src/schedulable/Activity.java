@@ -17,6 +17,7 @@ public class Activity extends Schedulable implements Serializable {
 	private LegalTimeline legalTimeline;
 	
 	public Activity(Duration duration) {
+		this.title = "";
 		this.duration = duration;
 		this.legalTimeline = new LegalTimeline(
 				new TreeMap<DateTime, Schedulable>());
@@ -31,19 +32,18 @@ public class Activity extends Schedulable implements Serializable {
 		
 	}
 	
-	public Activity(String title, Duration duration,
-			TreeMap<DateTime, Schedulable> legalTimes) {
+	public Activity(String title, Duration duration, LegalTimeline legalTimeline) {
 		this.title = title;
 		this.duration = duration;
-		this.legalTimeline = new LegalTimeline(legalTimes);
+		this.legalTimeline = legalTimeline;
 	}
 	
 	public Activity(String title, Duration duration, Location location,
-			TreeMap<DateTime, Schedulable> legalTimes) {
+			LegalTimeline legalTimeline) {
 		this.title = title;
 		this.duration = duration;
 		this.location = location;
-		this.legalTimeline = new LegalTimeline(legalTimes);
+		this.legalTimeline = legalTimeline;
 		
 	}
 	
@@ -54,10 +54,6 @@ public class Activity extends Schedulable implements Serializable {
 	public boolean addLegalTime(Interval interval) {
 		return legalTimeline.schedule(interval.getStart(), new LegalTime(
 				interval.toDuration(), true));
-	}
-	
-	public Location getLocation() {
-		return location;
 	}
 	
 	public LegalTimeline getLegalTimeline() {

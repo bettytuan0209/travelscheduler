@@ -37,8 +37,8 @@ public class TimelineTest {
 		Assert.assertTrue(timeline.schedule.isEmpty());
 		
 		// valid entry
-		schedule.put(new DateTime(2), new LegalTime(new Duration(2), true));
-		schedule.put(new DateTime(5), new LegalTime(new Duration(0), true));
+		schedule.put(new DateTime(2), new Activity(new Duration(2)));
+		schedule.put(new DateTime(5), new Activity(new Duration(0)));
 		Assert.assertTrue(timeline.schedule.isEmpty()); // check no reference
 		timeline = new Timeline(schedule);
 		Assert.assertTrue(timeline.getInterval().equals(new Interval(2, 6))); // check
@@ -52,7 +52,7 @@ public class TimelineTest {
 		Assert.assertEquals(schedule, getterResult);
 		Assert.assertFalse(schedule == getterResult);
 		getterResult.put(new DateTime(4), new Activity(new Duration(1)));
-		Assert.assertEquals(2, timeline.getNumActivities());
+		Assert.assertEquals(2, timeline.getNumScheduled());
 		
 		// test equals()
 		Timeline copy = (Timeline) DeepCopy.copy(timeline);
@@ -366,7 +366,7 @@ public class TimelineTest {
 		Assert.assertTrue(timeline.schedule(new DateTime(1), activity));
 		Activity activity2 = new Activity(new Duration(3));
 		Assert.assertTrue(timeline.schedule(new DateTime(5), activity2));
-		Assert.assertEquals(2, timeline.getNumActivities());
+		Assert.assertEquals(2, timeline.getNumScheduled());
 		Assert.assertFalse(timeline.isEmpty());
 		Assert.assertEquals(activity,
 				(Activity) timeline.unschedule(new DateTime(1)));
