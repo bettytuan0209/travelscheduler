@@ -66,7 +66,11 @@ public class Timeline implements Serializable {
 			Schedulable schedulable) {
 		DateTime earliestStart = earliestSchedulableLegalAfter(bound,
 				legalTimes, schedulable);
-		return schedule(earliestStart, schedulable);
+		if (earliestStart == null) {
+			return false;
+		} else {
+			return schedule(earliestStart, schedulable);
+		}
 	}
 	
 	public DateTime earliestSchedulableLegalAfter(DateTime bound,

@@ -88,15 +88,40 @@ public class TimelineTest {
 	
 	@Test
 	public void testScheduleAfter() {
-		// TreeMap<DateTime, Schedulable> schedule = new TreeMap<DateTime,
-		// Schedulable>();
-		// schedule.put(new DateTime(2), new LegalTime(new Duration(2), true));
-		// schedule.put(new DateTime(5), new LegalTime(new Duration(0), true));
-		// timeline = new Timeline(new Interval(1, 10), schedule);
-		// Assert.assertTrue(timeline.getInterval().equals(new Interval(1,
-		// 11))); // check
-		// Assert.assertEquals(schedule, timeline.schedule);
-		//
+		LegalTimeline legalTimeline = new LegalTimeline(new Interval(1, 20));
+		timeline = new Timeline(new Interval(1, 20));
+		DateTime bound = new DateTime(3);
+		Activity schedulable = new Activity(new Duration(2));
+		
+		// valid schedule
+		// Legal: 2 - 9 (false), 10 - 12
+		// Schedule: 4 - 9, 10 - 12
+		Assert.assertTrue(legalTimeline.schedule(new DateTime(2),
+				new LegalTime(new Duration(7), false)));
+		Assert.assertTrue(legalTimeline.schedule(new DateTime(10),
+				new LegalTime(new Duration(2), true)));
+		Assert.assertTrue(timeline.schedule(new DateTime(4), new Activity(
+				new Duration(5))));
+		Assert.assertTrue(timeline.scheduleAfter(bound, legalTimeline,
+				schedulable));
+		Assert.assertEquals(schedulable, timeline.getSchedule().lastEntry()
+				.getValue());
+		
+		// invalid schedule
+		// Legal: 2 - 9, 10 - 12
+		// Schedule: 4 - 9, 9 - 13
+		Assert.assertNotNull(legalTimeline.unschedule(new DateTime(2)));
+		Assert.assertTrue(legalTimeline.schedule(new DateTime(2),
+				new LegalTime(new Duration(7), true)));
+		Assert.assertNotNull(timeline.unschedule(new DateTime(10)));
+		Assert.assertTrue(timeline.schedule(new DateTime(9), new Activity(
+				new Duration(4))));
+		bound = new DateTime(10);
+		Assert.assertFalse(timeline.scheduleAfter(bound, legalTimeline,
+				schedulable));
+		Assert.assertNotEquals(schedulable, timeline.getSchedule().lastEntry()
+				.getValue());
+		
 	}
 	
 	@Test
