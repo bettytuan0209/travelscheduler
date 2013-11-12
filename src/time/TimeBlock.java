@@ -65,6 +65,21 @@ public class TimeBlock implements Serializable {
 		}
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof TimeBlock) {
+			TimeBlock other = (TimeBlock) obj;
+			if (index == other.index
+					&& startLocation.equals(other.startLocation)
+					&& endLocation.equals(other.endLocation)
+					&& scheduledActivities.equals(other.scheduledActivities)) {
+				return true;
+			}
+			
+		}
+		return false;
+	}
+	
 	public DateTime lastEndTime() {
 		return scheduledActivities.lastEndTime();
 	}

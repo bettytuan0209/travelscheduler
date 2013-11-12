@@ -18,4 +18,18 @@ public class Transportation extends Schedulable implements Serializable {
 		return endLocation;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Transportation) {
+			Transportation other = (Transportation) obj;
+			if (duration.equals(other.duration)
+					&& startLocation.equals(other.startLocation)
+					&& endLocation.equals(other.endLocation)) {
+				return true;
+			}
+			
+		}
+		return false;
+	}
+	
 }

@@ -20,7 +20,35 @@ public class LegalTimeline extends Timeline {
 	}
 	
 	public LegalTimeline(TreeMap<DateTime, Schedulable> schedule) {
-		super(schedule);
+		
+		if (schedule.isEmpty()) {
+			interval = new Interval(0, 0);
+			this.schedule = new TreeMap<DateTime, Schedulable>();
+		} else {
+			// add 1 milliseconds in default to be inclusive of end time
+			interval = new Interval(schedule.firstKey(), Util.getEndTime(
+					schedule.lastEntry()).plus(1));
+			this.schedule = new TreeMap<DateTime, Schedulable>();
+			
+			// insert the schedule to ensure it is legal
+			Iterator<Map.Entry<DateTime, Schedulable>> itr = schedule
+					.entrySet().iterator();
+			
+			while (itr.hasNext()) {
+				Map.Entry<DateTime, Schedulable> toInsert = itr.next();
+				if (!schedule(toInsert.getKey(), toInsert.getValue())) {
+					throw new IllegalArgumentException(
+							"TreeMap is invalid. Check for overlapping schedulables");
+				}
+			}
+		}
+	}
+	
+	public LegalTimeline(Interval interval,
+			TreeMap<DateTime, Schedulable> schedule) {
+		this(schedule);
+		this.interval = new Interval(interval.getStart(), interval.getEnd()
+				.plus(1));
 	}
 	
 	@Override

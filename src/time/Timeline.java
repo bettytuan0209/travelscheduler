@@ -16,39 +16,51 @@ import util.Util;
 
 public class Timeline implements Serializable {
 	private static final long serialVersionUID = -7686653954597194859L;
-	private Interval interval;
+	protected Interval interval;
 	protected TreeMap<DateTime, Schedulable> schedule;
+	
+	protected Timeline() {
+	}
 	
 	public Timeline(Interval interval) {
 		// add 1 milliseconds in default to make interval inclusive of end time
-		this.interval = new Interval(interval.getStartMillis(),
-				interval.getEndMillis() + 1);
+		this.interval = new Interval(interval.getStart(), interval.getEnd()
+				.plus(1));
 		schedule = new TreeMap<DateTime, Schedulable>();
 	}
 	
 	public Timeline(TreeMap<DateTime, Schedulable> schedule) {
-		this.schedule = schedule;
+		
 		if (schedule.isEmpty()) {
 			interval = new Interval(0, 0);
+			this.schedule = new TreeMap<DateTime, Schedulable>();
 		} else {
-			interval = new Interval(schedule.firstKey(),
-					Util.getEndTime(schedule.lastEntry()));
+			// add 1 milliseconds in default to be inclusive of end time
+			interval = new Interval(schedule.firstKey(), Util.getEndTime(
+					schedule.lastEntry()).plus(1));
+			this.schedule = new TreeMap<DateTime, Schedulable>();
+			
+			// insert the schedule to ensure it is legal
+			Iterator<Map.Entry<DateTime, Schedulable>> itr = schedule
+					.entrySet().iterator();
+			
+			while (itr.hasNext()) {
+				Map.Entry<DateTime, Schedulable> toInsert = itr.next();
+				if (!schedule(toInsert.getKey(), toInsert.getValue())) {
+					throw new IllegalArgumentException(
+							"TreeMap is invalid. Check for overlapping schedulables");
+				}
+			}
 		}
+		
 	}
 	
-	// public boolean containsSchedulableWithDuration(Duration duration) {
-	//
-	// Iterator<Map.Entry<DateTime, Schedulable>> itr = schedule.entrySet()
-	// .iterator();
-	//
-	// while (itr.hasNext()) {
-	// Map.Entry<DateTime, Schedulable>
-	// if (!itr.next().getValue().getDuration().isShorterThan(duration)) {
-	// return true;
-	// }
-	// }
-	// return false;
-	// }
+	public Timeline(Interval interval, TreeMap<DateTime, Schedulable> schedule) {
+		this(schedule);
+		this.interval = new Interval(interval.getStart(), interval.getEnd()
+				.plus(1));
+		;
+	}
 	
 	public boolean scheduleAfter(DateTime bound, LegalTimeline legalTimes,
 			Schedulable schedulable) {
@@ -87,6 +99,7 @@ public class Timeline implements Serializable {
 						"Cannot type cast schedulable to LegalTime");
 			}
 			
+			// this legalTime block is irrelevent to test for available time
 			if (legal == null
 					|| !((LegalTime) legal.getValue()).available
 					|| Util.getEndTime(legal).isBefore(start)
@@ -94,32 +107,37 @@ public class Timeline implements Serializable {
 							.isShorterThan(schedulable.getDuration())) {
 				if (legalItr.hasNext()) {
 					legal = legalItr.next();
-					start = legal.getKey();
+					start = later(start, legal.getKey());
 					continue;
 				} else {
 					return null;
 				}
 			}
 			
+			// this schedulable is irrelevant to test for available time
 			if (scheduled == null
 					|| (!Util.getEndTime(scheduled).isAfter(start) && scheduled
 							.getKey().isBefore(start))) {
 				if (scheduledItr.hasNext()) {
 					scheduled = scheduledItr.next();
 					continue;
+				} else {
+					scheduled = null;
 				}
 			}
+			
+			// out of schedulables
 			if (scheduled == null) {
 				return start;
-			} else if (start.isBefore(scheduled.getKey())) {
-				if (!new Duration(start, scheduled.getKey())
-						.isShorterThan(schedulable.getDuration())) {
-					return start;
-				}
+			} else if (start.isBefore(scheduled.getKey())
+					&& !new Duration(start, scheduled.getKey())
+							.isShorterThan(schedulable.getDuration())) {
+				return start;
+				
 			} else if (start.isEqual(scheduled.getKey())) {
 				start = start.plus(1);
 			} else {
-				start = Util.getEndTime(scheduled);
+				start = later(start, Util.getEndTime(scheduled));
 				continue;
 			}
 		}
@@ -152,14 +170,15 @@ public class Timeline implements Serializable {
 						.entrySet().iterator();
 				while (itr.hasNext()) {
 					Map.Entry<DateTime, Schedulable> entry = itr.next();
-					Interval scheduled = new Interval(entry.getKey()
-							.getMillis(), Util.getEndTime(entry).getMillis());
+					Interval scheduled = new Interval(entry.getKey(),
+							Util.getEndTime(entry));
 					
-					if (scheduled.overlaps(toSchedule)) {
+					if (scheduled.getStart().equals(toSchedule.getStart())
+							|| scheduled.overlaps(toSchedule)) {
 						return false;
 					}
 					// occurs before this scheduled event
-					if (toSchedule.getEnd().isBefore(scheduled.getStart())) {
+					if (!toSchedule.getEnd().isAfter(scheduled.getStart())) {
 						schedule.put(startTime, schedulable);
 						return true;
 					}
@@ -180,7 +199,12 @@ public class Timeline implements Serializable {
 	}
 	
 	public DateTime lastEndTime() {
-		return Util.getEndTime(schedule.lastEntry());
+		Map.Entry<DateTime, Schedulable> last = schedule.lastEntry();
+		if (last == null) {
+			return interval.getStart();
+		} else {
+			return Util.getEndTime(last);
+		}
 	}
 	
 	public int getNumActivities() {
@@ -197,6 +221,19 @@ public class Timeline implements Serializable {
 		} else {
 			return second;
 		}
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Timeline) {
+			Timeline other = (Timeline) obj;
+			if (interval.equals(other.interval)
+					&& schedule.equals(other.schedule)) {
+				return true;
+			}
+			
+		}
+		return false;
 	}
 	
 	public Interval getInterval() {

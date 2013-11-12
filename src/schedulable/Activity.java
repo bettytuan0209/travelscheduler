@@ -64,4 +64,19 @@ public class Activity extends Schedulable implements Serializable {
 		return legalTimeline;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Activity) {
+			Activity other = (Activity) obj;
+			if (duration.equals(other.duration)
+					&& (title == null || title.equals(other.title))
+					&& (location == null || location.equals(other.location))
+					&& legalTimeline.equals(other.legalTimeline)) {
+				return true;
+			}
+			
+		}
+		return false;
+	}
+	
 }
