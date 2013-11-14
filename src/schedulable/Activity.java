@@ -14,7 +14,7 @@ public class Activity extends Schedulable implements Serializable {
 	private static final long serialVersionUID = -17837538834918894L;
 	public String title;
 	public Location location;
-	private LegalTimeline legalTimeline;
+	public LegalTimeline legalTimeline;
 	
 	public Activity(Duration duration) {
 		this.title = "";
@@ -54,10 +54,6 @@ public class Activity extends Schedulable implements Serializable {
 	public boolean addLegalTime(Interval interval) {
 		return legalTimeline.schedule(interval.getStart(), new LegalTime(
 				interval.toDuration(), true));
-	}
-	
-	public LegalTimeline getLegalTimeline() {
-		return legalTimeline;
 	}
 	
 	@Override

@@ -13,7 +13,7 @@ public class TimeBlock implements Serializable {
 	private int index;
 	private Location startLocation;
 	private Location endLocation;
-	private Timeline scheduledActivities;
+	protected Timeline scheduledActivities;
 	
 	public TimeBlock(int index, Interval timespan, Location startLocation,
 			Location endLocation) {
@@ -27,7 +27,7 @@ public class TimeBlock implements Serializable {
 	public boolean scheduleAfter(DateTime startTime, Activity activity) {
 		// try to schedule it
 		return scheduledActivities.scheduleAfter(startTime,
-				activity.getLegalTimeline(), activity);
+				activity.legalTimeline, activity);
 	}
 	
 	public boolean scheduleAfter(Activity activity) {
@@ -42,11 +42,11 @@ public class TimeBlock implements Serializable {
 		
 		DateTime beforeInterval = scheduledActivities.getInterval().getStart()
 				.minus(1);
-		if (scheduledActivities.hasScheduleStart(beforeInterval)) {
-			return false;
-		} else {
-			scheduledActivities.schedule(beforeInterval, activity);
+		if (!scheduledActivities.hasScheduleStart(beforeInterval)
+				&& scheduledActivities.schedule.put(beforeInterval, activity) == null) {
 			return true;
+		} else {
+			return false;
 		}
 	}
 	
@@ -55,13 +55,12 @@ public class TimeBlock implements Serializable {
 		if (activity.getDuration().getMillis() > 1) {
 			return false;
 		}
-		DateTime afterInterval = scheduledActivities.getInterval().getEnd()
-				.plus(1);
-		if (scheduledActivities.hasScheduleStart(afterInterval)) {
-			return false;
-		} else {
-			scheduledActivities.schedule(afterInterval, activity);
+		DateTime afterInterval = scheduledActivities.getInterval().getEnd();
+		if (!scheduledActivities.hasScheduleStart(afterInterval)
+				&& scheduledActivities.schedule.put(afterInterval, activity) == null) {
 			return true;
+		} else {
+			return false;
 		}
 	}
 	

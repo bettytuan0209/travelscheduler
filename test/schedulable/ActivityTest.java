@@ -19,9 +19,9 @@ public class ActivityTest {
 		
 		activity = new Activity(duration);
 		Assert.assertEquals(duration, activity.duration);
-		Assert.assertNotNull(activity.getLegalTimeline());
+		Assert.assertNotNull(activity.legalTimeline);
 		Assert.assertEquals("", activity.title);
-		Assert.assertTrue(activity.getLegalTimeline().isEmpty());
+		Assert.assertTrue(activity.legalTimeline.isEmpty());
 		
 		Activity copy = (Activity) DeepCopy.copy(activity);
 		Assert.assertEquals(copy, activity);
@@ -37,13 +37,13 @@ public class ActivityTest {
 		Assert.assertEquals("title", activity.title);
 		Assert.assertEquals(duration, activity.duration);
 		Assert.assertEquals(location, activity.location);
-		Assert.assertNotNull(activity.getLegalTimeline());
-		Assert.assertTrue(activity.getLegalTimeline().isEmpty());
+		Assert.assertNotNull(activity.legalTimeline);
+		Assert.assertTrue(activity.legalTimeline.isEmpty());
 		
 	}
 	
 	@Test
-	public void testActivityStringDurationTreeMapOfDateTimeSchedulable() {
+	public void testActivityStringDurationLegalTimeline() {
 		Duration duration = new Duration(2);
 		LegalTimeline legalTimeline = new LegalTimeline(new Interval(1, 20));
 		Assert.assertTrue(legalTimeline.schedule(new DateTime(2),
@@ -52,13 +52,17 @@ public class ActivityTest {
 		activity = new Activity("title", duration, legalTimeline);
 		Assert.assertEquals("title", activity.title);
 		Assert.assertEquals(duration, activity.duration);
-		Assert.assertNotNull(activity.getLegalTimeline());
-		Assert.assertEquals(legalTimeline, activity.getLegalTimeline());
+		Assert.assertNotNull(activity.legalTimeline);
+		Assert.assertEquals(legalTimeline, activity.legalTimeline);
 		
+		Assert.assertTrue(legalTimeline.schedule(new DateTime(10),
+				new LegalTime(new Duration(5), true)));
+		Assert.assertEquals(new DateTime(15),
+				activity.legalTimeline.lastEndTime());
 	}
 	
 	@Test
-	public void testActivityStringDurationLocationTreeMapOfDateTimeSchedulable() {
+	public void testActivityStringDurationLocationLegalTimeline() {
 		Duration duration = new Duration(2);
 		Location location = new Location(1, 2);
 		LegalTimeline legalTimeline = new LegalTimeline(new Interval(1, 20));
@@ -69,8 +73,8 @@ public class ActivityTest {
 		Assert.assertEquals("title", activity.title);
 		Assert.assertEquals(duration, activity.duration);
 		Assert.assertEquals(location, activity.location);
-		Assert.assertNotNull(activity.getLegalTimeline());
-		Assert.assertEquals(legalTimeline, activity.getLegalTimeline());
+		Assert.assertNotNull(activity.legalTimeline);
+		Assert.assertEquals(legalTimeline, activity.legalTimeline);
 	}
 	
 	@Test

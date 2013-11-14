@@ -45,10 +45,9 @@ public class DeepCopyTest {
 		Assert.assertEquals(5, activityCopy.location.getLatitude(), 0);
 		Assert.assertEquals(10, activityCopy.location.getLongitude(), 0);
 		
-		Assert.assertFalse(activityOrigin.getLegalTimeline() == activityCopy
-				.getLegalTimeline());
-		Assert.assertTrue(activityOrigin.getLegalTimeline().getInterval()
-				.equals(activityCopy.getLegalTimeline().getInterval()));
+		Assert.assertFalse(activityOrigin.legalTimeline == activityCopy.legalTimeline);
+		Assert.assertTrue(activityOrigin.legalTimeline.getInterval().equals(
+				activityCopy.legalTimeline.getInterval()));
 		
 	}
 	

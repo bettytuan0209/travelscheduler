@@ -65,7 +65,7 @@ public class SchedulingState implements SearchState,
 		// and check if still have enough time to schedule it
 		DateTime earliestFree = tb.lastEndTime();
 		for (Activity activity : ast.getActivities()) {
-			activity.getLegalTimeline().setEarliestAvailable(earliestFree);
+			activity.legalTimeline.setEarliestAvailable(earliestFree);
 			if (!activity.forwardChecking()) {
 				return false;
 			}

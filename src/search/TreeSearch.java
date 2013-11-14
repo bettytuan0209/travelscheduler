@@ -1,7 +1,6 @@
 package search;
 
 import state.SearchState;
-import state.StatesContainer;
 
 public class TreeSearch {
 
