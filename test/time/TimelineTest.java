@@ -1,9 +1,5 @@
 package time;
 
-import static org.junit.Assert.fail;
-
-import java.util.Iterator;
-import java.util.Map;
 import java.util.TreeMap;
 
 import org.joda.time.DateTime;
@@ -16,7 +12,6 @@ import schedulable.Activity;
 import schedulable.LegalTime;
 import schedulable.Schedulable;
 import util.DeepCopy;
-import util.Util;
 
 public class TimelineTest {
 	Timeline timeline;
@@ -287,96 +282,6 @@ public class TimelineTest {
 		bound = new DateTime(1);
 		Assert.assertNull(timeline.earliestSchedulableLegalAfter(bound,
 				legalTimeline, schedulable));
-		
-	}
-	
-	@Test
-	public void testIntersect() {
-		Timeline first = new Timeline(new Interval(10, 20));
-		Timeline second = new Timeline(new Interval(1, 30));
-		
-		Timeline intersection;
-		
-		// boundary condition
-		// first: 10 - 12, 19 - 20
-		
-		Assert.assertTrue(first.schedule(new DateTime(10), new Activity(
-				new Duration(2))));
-		Assert.assertTrue(first.schedule(new DateTime(19), new Activity(
-				new Duration(1))));
-		Assert.assertEquals(new Timeline(new Interval(0, 0)),
-				first.intersect(second));
-		Assert.assertEquals(new Timeline(new Interval(0, 0)),
-				second.intersect(first));
-		
-		// first: 10 - 12, 19 - 20
-		// second: 25 - 30
-		Assert.assertTrue(second.schedule(new DateTime(25), new Activity(
-				new Duration(5))));
-		Assert.assertEquals(new Timeline(new Interval(0, 0)),
-				first.intersect(second));
-		Assert.assertEquals(new Timeline(new Interval(0, 0)),
-				second.intersect(first));
-		Assert.assertEquals(new Timeline(new Interval(0, 0)),
-				first.intersect(second));
-		
-		// first: 10 - 12, 19 - 20
-		// second: 13 - 16
-		Assert.assertNotNull(second.unschedule(new DateTime(25)));
-		Assert.assertTrue(second.schedule(new DateTime(13), new Activity(
-				new Duration(3))));
-		Assert.assertTrue(first.intersect(second).isEmpty());
-		Assert.assertTrue(second.intersect(first).isEmpty());
-		
-		// first: 1 - 5, 8 - 15, 20 - 25
-		// second: 2 - 4, 9 - 16, 18 - 26
-		first = new Timeline(new Interval(1, 30));
-		second = new Timeline(new Interval(2, 40));
-		
-		Assert.assertTrue(first.schedule(new DateTime(1), new Activity(
-				new Duration(4))));
-		Assert.assertTrue(first.schedule(new DateTime(8), new Activity(
-				new Duration(7))));
-		Assert.assertTrue(first.schedule(new DateTime(20), new Activity(
-				new Duration(5))));
-		Assert.assertTrue(second.schedule(new DateTime(2), new Activity(
-				new Duration(2))));
-		Assert.assertTrue(second.schedule(new DateTime(9), new Activity(
-				new Duration(7))));
-		Assert.assertTrue(second.schedule(new DateTime(18), new Activity(
-				new Duration(8))));
-		
-		// output: 2 - 4, 9 - 15, 20 - 25
-		intersection = first.intersect(second);
-		
-		Iterator<Map.Entry<DateTime, Schedulable>> itr = intersection.schedule
-				.entrySet().iterator();
-		
-		for (int i = 0;; i++) {
-			
-			if (i > 2) {
-				return;
-			} else if (!itr.hasNext()) {
-				fail("doesn't have enough schedulables");
-			}
-			
-			Map.Entry<DateTime, Schedulable> current = itr.next();
-			
-			switch (i) {
-			case 0:
-				Assert.assertEquals(new DateTime(2), current.getKey());
-				Assert.assertEquals(new DateTime(4), Util.getEndTime(current));
-				break;
-			case 1:
-				Assert.assertEquals(new DateTime(9), current.getKey());
-				Assert.assertEquals(new DateTime(15), Util.getEndTime(current));
-				break;
-			case 2:
-				Assert.assertEquals(new DateTime(20), current.getKey());
-				Assert.assertEquals(new DateTime(25), Util.getEndTime(current));
-				break;
-			}
-		}
 		
 	}
 	

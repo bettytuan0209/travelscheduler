@@ -119,4 +119,83 @@ public class LegalTimeline extends Timeline {
 		return false;
 	}
 	
+	public LegalTimeline intersect(LegalTimeline another) {
+		LegalTimeline intersection;
+		
+		// check for boundary
+		if (isEmpty()
+				|| another.isEmpty()
+				|| Util.getEndTime(schedule.lastEntry()).isBefore(
+						another.schedule.firstKey())
+				|| Util.getEndTime(another.schedule.lastEntry()).isBefore(
+						schedule.firstKey())) {
+			return new LegalTimeline(new Interval(0, 0));
+		}
+		
+		DateTime latestStart = this.later(schedule.firstKey(),
+				another.schedule.firstKey());
+		DateTime earliestEnd = earlier(Util.getEndTime(schedule.lastEntry()),
+				Util.getEndTime(another.schedule.lastEntry()));
+		intersection = new LegalTimeline(new Interval(latestStart, earliestEnd));
+		
+		Iterator<Map.Entry<DateTime, Schedulable>> mineItr = schedule
+				.entrySet().iterator();
+		Iterator<Map.Entry<DateTime, Schedulable>> theirItr = another.schedule
+				.entrySet().iterator();
+		
+		Map.Entry<DateTime, Schedulable> mine = null;
+		Map.Entry<DateTime, Schedulable> their = null;
+		
+		while (true) {
+			
+			// this block of mine is irrelevant now
+			if (mine == null
+					|| (their != null && Util.getEndTime(mine).isBefore(
+							their.getKey()))) {
+				if (mineItr.hasNext()) {
+					mine = mineItr.next();
+					continue;
+				} else {
+					return intersection;
+				}
+			}
+			
+			// this block of their is irrelevant now
+			if (their == null || Util.getEndTime(their).isBefore(mine.getKey())) {
+				if (theirItr.hasNext()) {
+					their = theirItr.next();
+					continue;
+				} else {
+					return intersection;
+				}
+			}
+			
+			// schedule intersection
+			latestStart = later(mine.getKey(), their.getKey());
+			earliestEnd = earlier(Util.getEndTime(mine), Util.getEndTime(their));
+			if (!intersection.schedule(latestStart, new LegalTime(new Duration(
+					latestStart, earliestEnd)))) {
+				throw new UnsupportedOperationException(
+						"Cannot insert intersection.");
+			}
+			
+			// forward one of the schedulables
+			if (earliestEnd.equals(Util.getEndTime(mine))) {
+				if (mineItr.hasNext()) {
+					mine = mineItr.next();
+					continue;
+				} else {
+					return intersection;
+				}
+			} else {
+				if (theirItr.hasNext()) {
+					their = theirItr.next();
+					continue;
+				} else {
+					return intersection;
+				}
+			}
+			
+		}
+	}
 }

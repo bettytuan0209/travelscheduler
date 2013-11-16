@@ -14,6 +14,11 @@ public class LegalTime extends Schedulable implements Serializable {
 		this.available = available;
 	}
 	
+	public LegalTime(Duration duration) {
+		this.duration = duration;
+		this.available = true;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof LegalTime) {
