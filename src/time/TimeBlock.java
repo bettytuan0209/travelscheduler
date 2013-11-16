@@ -79,6 +79,10 @@ public class TimeBlock implements Serializable {
 		return false;
 	}
 	
+	public Interval getInterval() {
+		return scheduledActivities.interval;
+	}
+	
 	public DateTime lastEndTime() {
 		return scheduledActivities.lastEndTime();
 	}

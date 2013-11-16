@@ -26,14 +26,12 @@ public class TimeBlockTest {
 		tb = new TimeBlock(index, interval, startLocation, endLocation);
 		
 		Assert.assertEquals(index, tb.getIndex());
-		Assert.assertEquals(new Interval(1, 21),
-				tb.scheduledActivities.interval);
+		Assert.assertEquals(new Interval(1, 21), tb.getInterval());
 		Assert.assertEquals(startLocation, tb.getStartLocation());
 		Assert.assertEquals(endLocation, tb.getEndLocation());
 		
 		interval = new Interval(5, 10);
-		Assert.assertEquals(new Interval(1, 21),
-				tb.scheduledActivities.interval);
+		Assert.assertEquals(new Interval(1, 21), tb.getInterval());
 		
 		TimeBlock copy = (TimeBlock) DeepCopy.copy(tb);
 		Assert.assertEquals(copy, tb);
