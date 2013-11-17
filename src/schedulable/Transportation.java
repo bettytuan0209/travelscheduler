@@ -2,29 +2,35 @@ package schedulable;
 
 import java.io.Serializable;
 
-import activities.Location;
+import org.joda.time.Duration;
 
 public class Transportation extends Schedulable implements Serializable {
 	
 	private static final long serialVersionUID = -2891097162573349168L;
-	private Location startLocation;
-	private Location endLocation;
 	
-	public Location getStartLocation() {
-		return startLocation;
+	// private Location startLocation;
+	// private Location endLocation;
+	
+	public Transportation(Duration duration) {
+		this.duration = duration;
 	}
 	
-	public Location getEndLocation() {
-		return endLocation;
-	}
+	// public Location getStartLocation() {
+	// return startLocation;
+	// }
+	//
+	// public Location getEndLocation() {
+	// return endLocation;
+	// }
 	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Transportation) {
 			Transportation other = (Transportation) obj;
 			if (duration.equals(other.duration)
-					&& startLocation.equals(other.startLocation)
-					&& endLocation.equals(other.endLocation)) {
+			// && startLocation.equals(other.startLocation)
+			// && endLocation.equals(other.endLocation)
+			) {
 				return true;
 			}
 			

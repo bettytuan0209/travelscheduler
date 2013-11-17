@@ -1,24 +1,29 @@
 package state;
 
 import java.util.ArrayList;
+import java.util.Map;
 
+import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
 import schedulable.Activity;
+import schedulable.Schedulable;
+import schedulable.Transportation;
 import time.TimeBlock;
 import util.DeepCopy;
-import activities.ActivitySpanningTree;
+import util.Util;
 
 public class SchedulingState implements SearchState,
 		Comparable<SchedulingState> {
 	private TimeBlock tb;
-	private ActivitySpanningTree ast;
+	private DirectedWeightedMultigraph<Activity, Transportation> graph;
 	
-	public SchedulingState(TimeBlock tb, ActivitySpanningTree ast) {
+	public SchedulingState(TimeBlock tb,
+			DirectedWeightedMultigraph<Activity, Transportation> graph) {
 		// create an initial state based on the paired TB and AST given
 		this.tb = tb;
-		this.ast = ast;
+		this.graph = graph;
 	}
 	
 	@Override
@@ -31,7 +36,7 @@ public class SchedulingState implements SearchState,
 		tb.scheduleAfter(start);
 		
 		// if out of activities, schedule to return to endLocation
-		if (ast.getActivities().isEmpty()) {
+		if (graph.vertexSet().isEmpty()) {
 			Activity end = new Activity("At end location", new Duration(1),
 					tb.getEndLocation());
 			tb.scheduleAfterTb(end);
@@ -39,13 +44,22 @@ public class SchedulingState implements SearchState,
 		}
 		
 		// go through all unscheduled activities
-		for (Activity activity : ast.getActivities()) {
+		for (Activity activity : graph.vertexSet()) {
 			SchedulingState newState = (SchedulingState) DeepCopy.copy(this);
+			
+			// find last activity
+			Map.Entry<DateTime, Schedulable> last = tb.getLastScheduled();
+			Transportation edge = graph.getEdge((Activity) last.getValue(),
+					activity);
+			
 			// if you can schedule this activity meeting constraints,
 			// add as a successor
-			if (newState.tb.scheduleAfter(activity)
-					&& newState.ast.removeActivity(activity)
-					&& newState.forwardChecking()) {
+			if (newState.tb.scheduleAfter(
+					Util.getEndTime(last).plus(edge.getDuration()), activity)
+					&& newState.graph.removeVertex(activity)
+					&& newState.forwardChecking()
+					&& newState.tb.schedule(tb.lastEndTime(), edge)) {
+				
 				successors.add(newState);
 				
 			}
@@ -57,14 +71,14 @@ public class SchedulingState implements SearchState,
 	
 	@Override
 	public boolean checkGoal() {
-		return ast.getActivities().isEmpty();
+		return graph.vertexSet().isEmpty();
 	}
 	
 	private boolean forwardChecking() {
 		// update each activity's legal time
 		// and check if still have enough time to schedule it
 		DateTime earliestFree = tb.lastEndTime();
-		for (Activity activity : ast.getActivities()) {
+		for (Activity activity : graph.vertexSet()) {
 			activity.legalTimeline.setEarliestAvailable(earliestFree);
 			if (!activity.forwardChecking()) {
 				return false;
@@ -76,8 +90,12 @@ public class SchedulingState implements SearchState,
 	
 	@Override
 	public int compareTo(SchedulingState other) {
-		return other.tb.lastEndTime().plus(other.ast.getSumActivitiesTime())
-				.compareTo(tb.lastEndTime().plus(ast.getSumActivitiesTime()));
+		return other.tb.lastEndTime().plus(other.sumActivitiesTime())
+				.compareTo(tb.lastEndTime().plus(sumActivitiesTime()));
 		
+	}
+	
+	public Duration sumActivitiesTime() {
+		return new Duration(0);
 	}
 }

@@ -1,11 +1,13 @@
 package time;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
 import schedulable.Activity;
+import schedulable.Schedulable;
 import activities.Location;
 
 public class TimeBlock implements Serializable {
@@ -22,6 +24,10 @@ public class TimeBlock implements Serializable {
 		this.endLocation = endLocation;
 		this.scheduledActivities = new Timeline(new Interval(timespan));
 		
+	}
+	
+	public boolean schedule(DateTime startTime, Schedulable schedulable) {
+		return scheduledActivities.schedule(startTime, schedulable);
 	}
 	
 	public boolean scheduleAfter(DateTime startTime, Activity activity) {
@@ -85,6 +91,10 @@ public class TimeBlock implements Serializable {
 	
 	public DateTime lastEndTime() {
 		return scheduledActivities.lastEndTime();
+	}
+	
+	public Map.Entry<DateTime, Schedulable> getLastScheduled() {
+		return scheduledActivities.schedule.lastEntry();
 	}
 	
 	public int getIndex() {

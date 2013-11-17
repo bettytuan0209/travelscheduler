@@ -40,6 +40,29 @@ public class TimeBlockTest {
 	}
 	
 	@Test
+	public void testSchedule() {
+		tb = new TimeBlock(1, new Interval(1, 10), new Location(1, 1),
+				new Location(2, 2));
+		
+		// out of range
+		Assert.assertFalse(tb.schedule(new DateTime(8), new Activity(
+				new Duration(11))));
+		
+		// legal 1-1, 5-8
+		Assert.assertTrue(tb.schedule(new DateTime(1), new Activity(
+				new Duration(0))));
+		Assert.assertTrue(tb.schedule(new DateTime(8), new Activity(
+				new Duration(2))));
+		
+		// overlap
+		Assert.assertFalse(tb.schedule(new DateTime(1), new Activity(
+				new Duration(2))));
+		Assert.assertFalse(tb.schedule(new DateTime(3), new Activity(
+				new Duration(6))));
+		
+	}
+	
+	@Test
 	public void testScheduleAfterActivity() {
 		tb = new TimeBlock(1, new Interval(1, 30), new Location(1, 1),
 				new Location(2, 2));
