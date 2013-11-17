@@ -51,8 +51,12 @@ public class TimeBlockTest {
 		// legal 1-1, 5-8
 		Assert.assertTrue(tb.schedule(new DateTime(1), new Activity(
 				new Duration(0))));
-		Assert.assertTrue(tb.schedule(new DateTime(8), new Activity(
-				new Duration(2))));
+		Assert.assertTrue(tb.schedule(new DateTime(5), new Activity(
+				new Duration(3))));
+		
+		Assert.assertEquals(new DateTime(5), tb.getLastScheduled().getKey());
+		Assert.assertEquals(new Activity(new Duration(3)), tb
+				.getLastScheduled().getValue());
 		
 		// overlap
 		Assert.assertFalse(tb.schedule(new DateTime(1), new Activity(
@@ -82,6 +86,9 @@ public class TimeBlockTest {
 				new Activity(new Duration(4))));
 		Assert.assertTrue(tb.scheduledActivities.schedule(new DateTime(18),
 				new Activity(new Duration(3))));
+		Assert.assertEquals(new DateTime(18), tb.getLastScheduled().getKey());
+		Assert.assertEquals(new Activity(new Duration(3)), tb
+				.getLastScheduled().getValue());
 		
 		// no bound
 		Assert.assertTrue(tb.scheduleAfter(activity));
