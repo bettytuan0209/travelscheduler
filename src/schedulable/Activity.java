@@ -3,6 +3,7 @@ package schedulable;
 import java.io.Serializable;
 import java.util.TreeMap;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
@@ -69,6 +70,13 @@ public class Activity extends Schedulable implements Serializable {
 			
 		}
 		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder().append(duration).append(title)
+				.append(location).append(legalTimeline).toHashCode();
+		
 	}
 	
 }

@@ -15,7 +15,7 @@ public class TimeBlock implements Serializable {
 	private int index;
 	private Location startLocation;
 	private Location endLocation;
-	protected Timeline scheduledActivities;
+	private Timeline scheduledActivities;
 	
 	public TimeBlock(int index, Interval timespan, Location startLocation,
 			Location endLocation) {
@@ -30,14 +30,19 @@ public class TimeBlock implements Serializable {
 		return scheduledActivities.schedule(startTime, schedulable);
 	}
 	
-	public boolean scheduleAfter(DateTime startTime, Activity activity) {
+	public boolean scheduleAfter(DateTime startTime, Schedulable schedulable) {
 		// try to schedule it
-		return scheduledActivities.scheduleAfter(startTime,
-				activity.legalTimeline, activity);
+		if (schedulable instanceof Activity) {
+			Activity activity = (Activity) schedulable;
+			return scheduledActivities.scheduleAfter(startTime,
+					activity.legalTimeline, activity);
+		} else {
+			return scheduledActivities.scheduleAfter(startTime, schedulable);
+		}
 	}
 	
-	public boolean scheduleAfter(Activity activity) {
-		return scheduleAfter(new DateTime(0), activity);
+	public boolean scheduleAfter(Schedulable schedulable) {
+		return scheduleAfter(new DateTime(0), schedulable);
 	}
 	
 	public boolean scheduleBeforeTb(Activity activity) {
@@ -107,6 +112,10 @@ public class TimeBlock implements Serializable {
 	
 	public Location getEndLocation() {
 		return endLocation;
+	}
+	
+	public Timeline getScheduledActivities() {
+		return scheduledActivities;
 	}
 	
 }

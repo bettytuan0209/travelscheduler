@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
@@ -60,6 +61,17 @@ public class Timeline implements Serializable {
 		this.interval = new Interval(interval.getStart(), interval.getEnd()
 				.plus(1));
 		;
+	}
+	
+	public boolean scheduleAfter(DateTime bound, Schedulable schedulable) {
+		LegalTimeline legalTimeline = new LegalTimeline(new Interval(
+				interval.getStart(), interval.getEnd().minus(1)));
+		if (legalTimeline.schedule(interval.getStart(), new LegalTime(
+				new Duration(legalTimeline.interval.toDuration())))) {
+			return scheduleAfter(bound, legalTimeline, schedulable);
+		} else {
+			return false;
+		}
 	}
 	
 	public boolean scheduleAfter(DateTime bound, LegalTimeline legalTimes,
@@ -257,4 +269,11 @@ public class Timeline implements Serializable {
 		return (TreeMap<DateTime, Schedulable>) DeepCopy.copy(schedule);
 	}
 	
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(). // two randomly chosen prime numbers
+										// if deriving:
+										// appendSuper(super.hashCode()).
+				append(interval).append(schedule).toHashCode();
+	}
 }

@@ -2,6 +2,8 @@ package activities;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class Location implements Serializable {
 	private static final long serialVersionUID = -7278148360349733343L;
 	private float latitude;
@@ -30,6 +32,13 @@ public class Location implements Serializable {
 			
 		}
 		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+		// two randomly chosen prime numbers
+				.append(latitude).append(longitude).toHashCode();
 	}
 	
 }

@@ -2,6 +2,7 @@ package schedulable;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.joda.time.Duration;
 
 public class LegalTime extends Schedulable implements Serializable {
@@ -29,5 +30,12 @@ public class LegalTime extends Schedulable implements Serializable {
 			
 		}
 		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder().append(duration).append(available)
+				.toHashCode();
+		
 	}
 }

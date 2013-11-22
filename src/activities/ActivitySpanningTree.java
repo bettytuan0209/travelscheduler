@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.jgraph.graph.Edge;
+import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -20,14 +20,15 @@ public class ActivitySpanningTree implements Serializable {
 	private static final long serialVersionUID = 6797165864508180241L;
 	public int index;
 	public ArrayList<TimeBlock> availableTBs;
-	private SimpleGraph<Activity, Edge> tree;
+	private SimpleGraph<Activity, DefaultEdge> tree;
 	private Duration sumActivitiesTime;
 	
 	public ActivitySpanningTree(int index, ArrayList<TimeBlock> availableTBs,
-			SimpleGraph<Activity, Edge> tree) {
+			SimpleGraph<Activity, DefaultEdge> tree, Duration sumActivitiesTime) {
 		this.index = index;
 		this.availableTBs = availableTBs;
 		this.tree = tree;
+		this.sumActivitiesTime = sumActivitiesTime;
 	}
 	
 	public boolean addActivity(Activity activity) {
@@ -57,7 +58,7 @@ public class ActivitySpanningTree implements Serializable {
 		return true;
 	}
 	
-	public boolean addEdge(Activity origin, Activity dest, Edge edge) {
+	public boolean addEdge(Activity origin, Activity dest, DefaultEdge edge) {
 		return tree.addEdge(origin, dest, edge);
 	}
 	
