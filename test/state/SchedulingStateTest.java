@@ -11,6 +11,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import schedulable.Activity;
@@ -24,46 +25,16 @@ import util.DeepCopy;
 import activities.Location;
 
 public class SchedulingStateTest {
-	SchedulingState state;
+	static SchedulingState state;
+	static Activity start, end, museum, concert, park;
+	
+	@BeforeClass
+	public static void init() {
+		initHelper();
+	}
 	
 	@Test
 	public void testSuccessors() {
-		TimeBlock tb = new TimeBlock(1, new Interval(1, 30),
-				new Location(0, 0), new Location(0, 0));
-		Activity start = new Activity("At start location", new Duration(0),
-				tb.getStartLocation());
-		Activity end = new Activity("At end location", new Duration(0),
-				tb.getEndLocation());
-		
-		ArrayList<TimeBlock> availableTBs = new ArrayList<TimeBlock>();
-		availableTBs.add(tb);
-		SimpleWeightedGraph<Location, Transportation> graph = new SimpleWeightedGraph<Location, Transportation>(
-				Transportation.class);
-		LegalTimeline legal1 = new LegalTimeline(new Interval(1, 30));
-		Assert.assertTrue(legal1.schedule(new DateTime(1), new LegalTime(
-				new Duration(20))));
-		Activity museum = new Activity("museum", new Duration(2), new Location(
-				1, 1), legal1);
-		Activity concert = new Activity("concert", new Duration(3),
-				new Location(2, 2), (LegalTimeline) DeepCopy.copy(legal1));
-		Activity park = new Activity("park", new Duration(1),
-				new Location(3, 3), (LegalTimeline) DeepCopy.copy(legal1));
-		HashSet<Activity> activities = new HashSet<Activity>();
-		activities.add(museum);
-		activities.add(concert);
-		activities.add(park);
-		
-		graph.addVertex(museum.location);
-		graph.addVertex(concert.location);
-		graph.addVertex(park.location);
-		graph.addEdge(museum.location, concert.location, new Transportation(
-				new Duration(3)));
-		graph.addEdge(park.location, museum.location, new Transportation(
-				new Duration(7)));
-		graph.addEdge(park.location, concert.location, new Transportation(
-				new Duration(2)));
-		
-		state = new SchedulingState(tb, graph, activities);
 		
 		ArrayList<SearchState> successors = new ArrayList<SearchState>();
 		
@@ -246,6 +217,46 @@ public class SchedulingStateTest {
 		
 		successors = successors.get(0).successors();
 		Assert.assertTrue(successors.isEmpty());
+	}
+	
+	public static SchedulingState initHelper() {
+		TimeBlock tb = new TimeBlock(1, new Interval(1, 30),
+				new Location(0, 0), new Location(0, 0));
+		start = new Activity("At start location", new Duration(0),
+				tb.getStartLocation());
+		end = new Activity("At end location", new Duration(0),
+				tb.getEndLocation());
+		
+		ArrayList<TimeBlock> availableTBs = new ArrayList<TimeBlock>();
+		availableTBs.add(tb);
+		SimpleWeightedGraph<Location, Transportation> graph = new SimpleWeightedGraph<Location, Transportation>(
+				Transportation.class);
+		LegalTimeline legal1 = new LegalTimeline(new Interval(1, 30));
+		Assert.assertTrue(legal1.schedule(new DateTime(1), new LegalTime(
+				new Duration(20))));
+		museum = new Activity("museum", new Duration(2), new Location(1, 1),
+				legal1);
+		concert = new Activity("concert", new Duration(3), new Location(2, 2),
+				(LegalTimeline) DeepCopy.copy(legal1));
+		park = new Activity("park", new Duration(1), new Location(3, 3),
+				(LegalTimeline) DeepCopy.copy(legal1));
+		HashSet<Activity> activities = new HashSet<Activity>();
+		activities.add(museum);
+		activities.add(concert);
+		activities.add(park);
+		
+		graph.addVertex(museum.location);
+		graph.addVertex(concert.location);
+		graph.addVertex(park.location);
+		graph.addEdge(museum.location, concert.location, new Transportation(
+				new Duration(3)));
+		graph.addEdge(park.location, museum.location, new Transportation(
+				new Duration(7)));
+		graph.addEdge(park.location, concert.location, new Transportation(
+				new Duration(2)));
+		
+		state = new SchedulingState(tb, graph, activities);
+		return state;
 	}
 	
 }
