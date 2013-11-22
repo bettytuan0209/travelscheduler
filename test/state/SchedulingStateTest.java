@@ -194,7 +194,7 @@ public class SchedulingStateTest {
 			// 0 - 0 start, 1 - 5 transportation, 5 - 7 museum
 			// 7 - 14 transportation, 14 - 15 park
 			// 15 - 17 transportation, 17 - 20 concert
-			// 20 - 25 transportation, 31 - 31 end
+			// 20 - 25 transportation, 25 - 25 end
 			Assert.assertEquals(start, map.get(new DateTime(0)));
 			Assert.assertEquals(new Transportation(new Duration(4)),
 					map.get(new DateTime(1)));
@@ -209,8 +209,8 @@ public class SchedulingStateTest {
 					((Activity) (map.get(new DateTime(17)))).title);
 			Assert.assertEquals(new Transportation(new Duration(5)),
 					map.get(new DateTime(20)));
-			Assert.assertEquals(end, map.get(new DateTime(31)));
-			Assert.assertEquals(new DateTime(31), child.getTb().lastEndTime());
+			Assert.assertEquals(end, map.get(new DateTime(25)));
+			Assert.assertEquals(new DateTime(25), child.getTb().lastEndTime());
 			Assert.assertTrue(child.checkGoal());
 			
 		}

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jgrapht.graph.SimpleWeightedGraph;
@@ -58,8 +59,11 @@ public class SchedulingState implements SearchState,
 		
 		// if out of activities, schedule to return to endLocation
 		if (activities.isEmpty()) {
-			if (!tb.getScheduledActivities().hasScheduleStart(
-					tb.getInterval().getEnd())) {
+			TreeMap<DateTime, Schedulable> schedule = tb
+					.getScheduledActivities().getSchedule();
+			Schedulable last = schedule.lastEntry().getValue();
+			if (last instanceof Activity
+					&& !((Activity) last).location.equals(tb.getEndLocation())) {
 				SchedulingState newState = this.clone();
 				Transportation edge = Util.searchTransportation(((Activity) tb
 						.getLastScheduled().getValue()).location, end.location);

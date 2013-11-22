@@ -66,9 +66,11 @@ public class TimeBlock implements Serializable {
 		if (activity.getDuration().getMillis() > 1) {
 			return false;
 		}
-		DateTime afterInterval = scheduledActivities.getInterval().getEnd();
-		if (!scheduledActivities.hasScheduleStart(afterInterval)
-				&& scheduledActivities.schedule.put(afterInterval, activity) == null) {
+		DateTime last = scheduledActivities.lastEndTime();
+		if (scheduledActivities.hasScheduleStart(last)) {
+			last = last.plus(1);
+		}
+		if (scheduledActivities.schedule.put(last, activity) == null) {
 			return true;
 		} else {
 			return false;
