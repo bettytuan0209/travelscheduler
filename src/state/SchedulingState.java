@@ -114,12 +114,14 @@ public class SchedulingState implements SearchState,
 	
 	@Override
 	public boolean checkGoal() {
-		Schedulable lastScheduled = tb.getLastScheduled().getValue();
 		
-		if (activities.isEmpty() && lastScheduled instanceof Activity) {
-			Activity activity = ((Activity) lastScheduled);
-			return activity.location != null
-					&& activity.location.equals(tb.getEndLocation());
+		if (activities.isEmpty() && tb.getLastScheduled() != null) {
+			Schedulable lastScheduled = tb.getLastScheduled().getValue();
+			if (lastScheduled instanceof Activity) {
+				Activity activity = ((Activity) lastScheduled);
+				return activity.location != null
+						&& activity.location.equals(tb.getEndLocation());
+			}
 		}
 		return false;
 	}

@@ -155,10 +155,12 @@ public class TimeBlockTest {
 	public void testScheduleAfterTb() {
 		tb = new TimeBlock(1, new Interval(1, 30), new Location(1, 1),
 				new Location(2, 2));
+		Activity activity = new Activity("", new Duration(5),
+				new Location(3, 5));
+		Assert.assertTrue(tb.schedule(new DateTime(2), activity));
 		
 		// too long
-		Activity activity = new Activity("", new Duration(2),
-				new Location(1, 2));
+		activity = new Activity("", new Duration(2), new Location(1, 2));
 		Assert.assertFalse(tb.scheduleAfterTb(activity));
 		
 		// legal
@@ -166,15 +168,7 @@ public class TimeBlockTest {
 		Assert.assertTrue(tb.scheduleAfterTb(activity));
 		Map.Entry<DateTime, Schedulable> entry = tb.getScheduledActivities().schedule
 				.lastEntry();
-		Assert.assertEquals(new DateTime(31), entry.getKey());
-		Assert.assertEquals(activity, entry.getValue());
-		
-		// already scheduled
-		Activity activity2 = new Activity("", new Duration(0), new Location(1,
-				2));
-		Assert.assertFalse(tb.scheduleAfterTb(activity2));
-		entry = tb.getScheduledActivities().schedule.lastEntry();
-		Assert.assertEquals(new DateTime(31), entry.getKey());
+		Assert.assertEquals(new DateTime(7), entry.getKey());
 		Assert.assertEquals(activity, entry.getValue());
 		
 	}
