@@ -4,7 +4,6 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.PriorityQueue;
 import java.util.TreeMap;
 
 import org.jgrapht.graph.SimpleWeightedGraph;
@@ -18,6 +17,7 @@ import schedulable.Activity;
 import schedulable.LegalTime;
 import schedulable.Schedulable;
 import schedulable.Transportation;
+import search.AStar;
 import time.LegalTimeline;
 import time.TimeBlock;
 import util.DeepCopy;
@@ -25,37 +25,6 @@ import activities.Location;
 
 public class SchedulingStateTest {
 	SchedulingState state;
-	
-	@Test
-	public void testSchedulingState() {
-		// int tbIndex = 1;
-		// Interval interval = new Interval(1, 20);
-		// Location startLocation = new Location(1, 2);
-		// Location endLocation = new Location(3, 5);
-		// TimeBlock tb = new TimeBlock(tbIndex, interval, startLocation,
-		// endLocation);
-		//
-		// ArrayList<TimeBlock> availableTBs = new ArrayList<TimeBlock>();
-		// availableTBs.add(tb);
-		// SimpleWeightedGraph<Location, Transportation> graph = new
-		// SimpleWeightedGraph<Location, Transportation>(
-		// Transportation.class);
-		// Activity activity1 = new Activity(new Duration(2));
-		// Activity activity2 = new Activity(new Duration(3));
-		// graph.addVertex(activity1);
-		// graph.addVertex(activity2);
-		// graph.addEdge(activity1, activity2, new Transportation(new
-		// Duration(3)));
-		//
-		// state = new SchedulingState(tb, graph, graph.vertexSet());
-		// // Assert.assertTrue(state.graph.containsVertex(activity1));
-		// // Assert.assertTrue(state.graph.containsVertex(activity2));
-		// SchedulingState copy = (SchedulingState) DeepCopy.copy(state);
-		// Assert.assertEquals(copy, state);
-		// copy.graph.addVertex(new Activity("test", new Duration(2),
-		// new Location(2, 3)));
-		// System.out.println();
-	}
 	
 	@Test
 	public void testSuccessors() {
@@ -159,7 +128,7 @@ public class SchedulingStateTest {
 		// test comparing
 		Assert.assertTrue(first.compareTo(second) < 0);
 		Assert.assertTrue(third.compareTo(second) > 0);
-		PriorityQueue<SearchState> heap = new PriorityQueue<SearchState>();
+		AStar heap = new AStar();
 		heap.add(third);
 		heap.add(second);
 		heap.add(first);

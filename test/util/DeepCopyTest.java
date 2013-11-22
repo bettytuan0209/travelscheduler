@@ -68,11 +68,12 @@ public class DeepCopyTest {
 		LegalTimeline legal1 = new LegalTimeline(new Interval(1, 20));
 		Assert.assertTrue(legal1.schedule(new DateTime(1), new LegalTime(
 				new Duration(20))));
-		Activity museum = new Activity("museum", new Duration(2), legal1);
+		Activity museum = new Activity("museum", new Duration(2), new Location(
+				0, 0), legal1);
 		Activity concert = new Activity("concert", new Duration(3),
-				(LegalTimeline) DeepCopy.copy(legal1));
+				new Location(1, 1), (LegalTimeline) DeepCopy.copy(legal1));
 		Activity park = new Activity("park", new Duration(1),
-				(LegalTimeline) DeepCopy.copy(legal1));
+				new Location(2, 2), (LegalTimeline) DeepCopy.copy(legal1));
 		HashSet<Activity> activities = new HashSet<Activity>();
 		activities.add(museum);
 		activities.add(concert);
