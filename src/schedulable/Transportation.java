@@ -2,7 +2,6 @@ package schedulable;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.joda.time.Duration;
 
 public class Transportation extends Schedulable implements Serializable {
@@ -24,27 +23,27 @@ public class Transportation extends Schedulable implements Serializable {
 	// return endLocation;
 	// }
 	
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof Transportation) {
-			Transportation other = (Transportation) obj;
-			if (duration.equals(other.duration)
-			// && startLocation.equals(other.startLocation)
-			// && endLocation.equals(other.endLocation)
-			) {
-				return true;
-			}
-			
-		}
-		return false;
-	}
-	
-	@Override
-	public int hashCode() {
-		return new HashCodeBuilder().append(duration)
-		// .append(startLocation).append(endLocation)
-				.toHashCode();
-		
-	}
+	// @Override
+	// public boolean equals(Object obj) {
+	// if (obj instanceof Transportation) {
+	// Transportation other = (Transportation) obj;
+	// if (duration.equals(other.duration)
+	// // && startLocation.equals(other.startLocation)
+	// // && endLocation.equals(other.endLocation)
+	// ) {
+	// return true;
+	// }
+	//
+	// }
+	// return false;
+	// }
+	//
+	// @Override
+	// public int hashCode() {
+	// return new HashCodeBuilder().append(duration)
+	// // .append(startLocation).append(endLocation)
+	// .toHashCode();
+	//
+	// }
 	
 }

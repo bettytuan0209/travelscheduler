@@ -27,7 +27,7 @@ public class Scheduler {
 		return true;
 	}
 	
-	public boolean schedule(
+	private boolean schedule(
 			SimpleWeightedGraph<Location, Transportation> wholeGraph,
 			TimeBlock timeblock, ActivitySpanningTree ast) {
 		

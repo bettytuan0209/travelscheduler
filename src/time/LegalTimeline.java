@@ -51,6 +51,11 @@ public class LegalTimeline extends Timeline {
 				.plus(1));
 	}
 	
+	public boolean schedule(long start, long end) {
+		return privateSchedule(new DateTime(start), new LegalTime(new Duration(
+				end - start)));
+	}
+	
 	@Override
 	public boolean schedule(DateTime startTime, Schedulable legalTime) {
 		if (!(legalTime instanceof LegalTime)) {

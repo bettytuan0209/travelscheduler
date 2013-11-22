@@ -84,16 +84,9 @@ public class SchedulingState implements SearchState,
 			
 			// find last activity
 			Map.Entry<DateTime, Schedulable> last = tb.getLastScheduled();
-			Transportation edge;
+			Transportation edge = graph.getEdge(
+					((Activity) last.getValue()).location, activity.location);
 			
-			// find transportation
-			if (last.getValue().equals(start)) {
-				edge = Util.searchTransportation(start.location,
-						activity.location);
-			} else {
-				edge = graph.getEdge(((Activity) last.getValue()).location,
-						activity.location);
-			}
 			// if you can schedule this activity meeting constraints,
 			// add as a successor
 			if (edge != null
