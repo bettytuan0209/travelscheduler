@@ -18,7 +18,6 @@ import schedulable.Transportation;
 import time.TimeBlock;
 import time.Timeline;
 import util.DeepCopy;
-import util.Util;
 import activities.Location;
 
 public class SchedulingState implements SearchState,
@@ -65,7 +64,7 @@ public class SchedulingState implements SearchState,
 			if (last instanceof Activity
 					&& !((Activity) last).location.equals(tb.getEndLocation())) {
 				SchedulingState newState = this.clone();
-				Transportation edge = Util.searchTransportation(((Activity) tb
+				Transportation edge = graph.getEdge(((Activity) tb
 						.getLastScheduled().getValue()).location, end.location);
 				if (edge != null
 						&& newState.tb.schedule(tb.lastEndTime(), edge)

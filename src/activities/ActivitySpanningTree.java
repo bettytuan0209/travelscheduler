@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.SimpleGraph;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
@@ -20,14 +18,17 @@ public class ActivitySpanningTree implements Serializable {
 	private static final long serialVersionUID = 6797165864508180241L;
 	public int index;
 	public ArrayList<TimeBlock> availableTBs;
-	private SimpleGraph<Activity, DefaultEdge> tree;
+	// private SimpleGraph<Activity, DefaultEdge> tree;
+	private Set<Activity> activities;
 	private Duration sumActivitiesTime;
 	
 	public ActivitySpanningTree(int index, ArrayList<TimeBlock> availableTBs,
-			SimpleGraph<Activity, DefaultEdge> tree, Duration sumActivitiesTime) {
+	// SimpleGraph<Activity, DefaultEdge> tree
+			Set<Activity> activities, Duration sumActivitiesTime) {
 		this.index = index;
 		this.availableTBs = availableTBs;
-		this.tree = tree;
+		// this.tree = tree;
+		this.activities = activities;
 		this.sumActivitiesTime = sumActivitiesTime;
 	}
 	
@@ -50,7 +51,8 @@ public class ActivitySpanningTree implements Serializable {
 			return false;
 		}
 		
-		tree.addVertex(activity);
+		// tree.addVertex(activity);
+		activities.add(activity);
 		
 		// update sumActivitiesTime
 		sumActivitiesTime = sumActivitiesTime.plus(activity.getDuration());
@@ -58,13 +60,14 @@ public class ActivitySpanningTree implements Serializable {
 		return true;
 	}
 	
-	public boolean addEdge(Activity origin, Activity dest, DefaultEdge edge) {
-		return tree.addEdge(origin, dest, edge);
-	}
+	// public boolean addEdge(Activity origin, Activity dest, DefaultEdge edge)
+	// {
+	// return tree.addEdge(origin, dest, edge);
+	// }
 	
 	public Set<Activity> getActivities() {
-		return tree.vertexSet();
-		
+		// return tree.vertexSet();
+		return activities;
 	}
 	
 	public Duration getSumActivitiesTime() {
@@ -72,7 +75,8 @@ public class ActivitySpanningTree implements Serializable {
 	}
 	
 	public boolean removeActivity(Activity activity) {
-		if (tree.removeVertex(activity)) {
+		// if (tree.removeVertex(activity)) {
+		if (activities.remove(activity)) {
 			sumActivitiesTime = sumActivitiesTime.minus(activity.getDuration());
 			return true;
 		}

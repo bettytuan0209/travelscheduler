@@ -332,7 +332,7 @@ public class SchedulingStateTest {
 		// building basics
 		tb1 = new TimeBlock(1, new Interval(1, 30), new Location(0, 0),
 				new Location(0, 0));
-		tb2 = new TimeBlock(1, new Interval(8, 30), new Location(0, 0),
+		tb2 = new TimeBlock(2, new Interval(8, 30), new Location(0, 0),
 				new Location(0, 0));
 		start = new Activity("At start location", new Duration(0),
 				new Location(0, 0));

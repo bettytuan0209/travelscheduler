@@ -93,8 +93,9 @@ public class DeepCopyTest {
 		SchedulingState clone = state.clone();
 		Assert.assertTrue(clone.getGraph().containsVertex(museum.location));
 		Assert.assertTrue(clone.getGraph().containsVertex(park.location));
-		Assert.assertEquals(new Transportation(new Duration(3)), clone
-				.getGraph().getEdge(museum.location, concert.location));
+		Assert.assertEquals(new Duration(3),
+				clone.getGraph().getEdge(museum.location, concert.location)
+						.getDuration());
 		
 	}
 	

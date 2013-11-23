@@ -1,5 +1,6 @@
 package algo;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,19 +16,26 @@ import activities.Location;
 
 public class Scheduler {
 	
-	public boolean scheduleAll(
+	public static ArrayList<TimeBlock> autoScheduleAll(
 			SimpleWeightedGraph<Location, Transportation> graph,
 			HashMap<TimeBlock, ActivitySpanningTree> pairs) {
+		
+		ArrayList<TimeBlock> autoSchedules = new ArrayList<TimeBlock>();
+		
 		for (Map.Entry<TimeBlock, ActivitySpanningTree> pair : pairs.entrySet()) {
-			if (!schedule(graph, pair.getKey(), pair.getValue())) {
-				return false;
+			TimeBlock autoSchedule = autoSchedule(graph, pair.getKey(),
+					pair.getValue());
+			if (autoSchedule == null) {
+				return null;
+			} else {
+				autoSchedules.add(autoSchedule);
 			}
 			
 		}
-		return true;
+		return autoSchedules;
 	}
 	
-	private boolean schedule(
+	private static TimeBlock autoSchedule(
 			SimpleWeightedGraph<Location, Transportation> wholeGraph,
 			TimeBlock timeblock, ActivitySpanningTree ast) {
 		
@@ -37,10 +45,11 @@ public class Scheduler {
 		
 		TreeSearch searcher = new TreeSearch(new AStar(), root);
 		
-		if (searcher.nextGoal() != null) {
-			return true;
+		SchedulingState state = ((SchedulingState) searcher.nextGoal());
+		if (state != null) {
+			return state.getTb();
 		} else {
-			return false;
+			return null;
 		}
 	}
 	
