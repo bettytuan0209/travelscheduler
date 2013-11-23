@@ -20,6 +20,15 @@ import time.Timeline;
 import util.DeepCopy;
 import activities.Location;
 
+/**
+ * This is the state that the Scheduler uses to schedule a set of activities in
+ * an AST to a timeline in a TB. A state consists of the TB related to this
+ * scheduling procedure, the graph with location and transportation information
+ * between locations and a set of activities to schedule
+ * 
+ * @author chiao-yutuan
+ * 
+ */
 public class SchedulingState implements SearchState,
 		Comparable<SchedulingState>, Serializable {
 	private static final long serialVersionUID = -6014222737627795512L;
@@ -27,6 +36,17 @@ public class SchedulingState implements SearchState,
 	private SimpleWeightedGraph<Location, Transportation> graph;
 	public HashSet<Activity> activities;
 	
+	/**
+	 * Constructor with all fields. TB and the graph are taken by reference. The
+	 * set of activities is recreated
+	 * 
+	 * @param tb
+	 *            The TB to schedule on
+	 * @param graph
+	 *            The graph with location and transporation informations
+	 * @param activities
+	 *            The set of activities yet to schedule
+	 */
 	public SchedulingState(TimeBlock tb,
 			SimpleWeightedGraph<Location, Transportation> graph,
 			Set<Activity> activities) {
@@ -35,6 +55,13 @@ public class SchedulingState implements SearchState,
 		this.graph = graph;
 		this.activities = new HashSet<Activity>(activities);
 	}
+	
+	/**
+	 * Overrides the SearchState's successors(). Generates the list of
+	 * successors from this state
+	 * 
+	 * @return an ArrayList of search states
+	 */
 	
 	@Override
 	public ArrayList<SearchState> successors() {
@@ -104,6 +131,13 @@ public class SchedulingState implements SearchState,
 		return successors;
 	}
 	
+	/**
+	 * Overrides the SearchState's checkGoal(). A SchedulingState is a goal
+	 * state if it doesn't have any unscheduled activities left and the last
+	 * activity scheduled is at endLocation
+	 * 
+	 * @return True if this is a goal state. False if otherwise
+	 */
 	@Override
 	public boolean checkGoal() {
 		
@@ -118,13 +152,24 @@ public class SchedulingState implements SearchState,
 		return false;
 	}
 	
+	/**
+	 * Helper function that performs forward checking for successors(). It goes
+	 * through all unscheduled activities, update their legaltime to reflect the
+	 * last scheduled and see if there is still enough legal time to schedule
+	 * this unscheduled activity
+	 * 
+	 * @return True if all unscheduled activities returned true for their forwar
+	 *         checks. This method can return false if at least one activity
+	 *         didn't pass their forward check or setEarliestAvailable()
+	 *         returned false
+	 */
 	private boolean forwardChecking() {
 		// update each activity's legal time
 		// and check if still have enough time to schedule it
 		DateTime earliestFree = tb.lastEndTime();
 		for (Activity activity : activities) {
-			activity.legalTimeline.setEarliestAvailable(earliestFree);
-			if (!activity.forwardChecking()) {
+			if (activity.legalTimeline.setEarliestAvailable(earliestFree)
+					&& !activity.forwardChecking()) {
 				return false;
 			}
 			
@@ -132,8 +177,17 @@ public class SchedulingState implements SearchState,
 		return true;
 	}
 	
-	@Override
+	/**
+	 * Implements compareTo() for the interface Comparable so that states with
+	 * the lowest h value is placed on top of the priority queue. G value is the
+	 * last end time of the TB. H value is the sum of all unscheduled activities
+	 * 
+	 * @return A negative integer, zero, or a positive integer as this object is
+	 *         less than, equal to, or greater than the specified object.
+	 */
+	
 	public int compareTo(SchedulingState other) {
+		
 		return tb
 				.lastEndTime()
 				.plus(sumActivitiesTime())
@@ -142,6 +196,12 @@ public class SchedulingState implements SearchState,
 		
 	}
 	
+	/**
+	 * Helper function that adds the duration of all unscheduled activities
+	 * together
+	 * 
+	 * @return The sum duration of all unscheduled activities
+	 */
 	private Duration sumActivitiesTime() {
 		Duration sum = new Duration(0);
 		for (Activity current : activities) {
@@ -150,18 +210,10 @@ public class SchedulingState implements SearchState,
 		return sum;
 	}
 	
-	public TimeBlock getTb() {
-		return tb;
-	}
-	
-	public SimpleWeightedGraph<Location, Transportation> getGraph() {
-		return graph;
-	}
-	
-	public Set<Activity> getActivities() {
-		return activities;
-	}
-	
+	/**
+	 * Overrides the object equals() method. Checks all fields to see if
+	 * equals(). Consistent with hashCode()
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof SchedulingState) {
@@ -178,6 +230,10 @@ public class SchedulingState implements SearchState,
 		return false;
 	}
 	
+	/**
+	 * Overrides the object hashCode() method. Creates a hash using all fields
+	 * in the class. Consistent with equals()
+	 */
 	@Override
 	public int hashCode() {
 		
@@ -186,15 +242,37 @@ public class SchedulingState implements SearchState,
 		
 	}
 	
+	/**
+	 * Overrides the object clone() method. This method creates a deep copy of
+	 * this state except the graph, which is passed by reference, because it is
+	 * rarely necessary to clone a copy of the graph
+	 * 
+	 * @return the copy of the state
+	 */
 	@Override
 	public SchedulingState clone() {
 		TimeBlock tbClone = (TimeBlock) DeepCopy.copy(tb);
+		@SuppressWarnings("unchecked")
 		HashSet<Activity> activitiesClone = (HashSet<Activity>) DeepCopy
 				.copy(activities);
 		SchedulingState clone = new SchedulingState(tbClone, graph,
 				activitiesClone);
 		
 		return clone;
+	}
+	
+	/************************** Getters ***************************/
+	
+	public TimeBlock getTb() {
+		return tb;
+	}
+	
+	public SimpleWeightedGraph<Location, Transportation> getGraph() {
+		return graph;
+	}
+	
+	public Set<Activity> getActivities() {
+		return activities;
 	}
 	
 }

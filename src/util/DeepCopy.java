@@ -6,7 +6,22 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+/**
+ * Util class that makes a deep copy of any object using serialization
+ * 
+ * @author chiao-yutuan
+ * 
+ */
 public class DeepCopy {
+	
+	/**
+	 * Makes a deep copy of the object by serializing the object and unserialize
+	 * it back
+	 * 
+	 * @param orig
+	 *            Original object
+	 * @return copied object
+	 */
 	public static Object copy(Object orig) {
 		
 		Object obj = null;

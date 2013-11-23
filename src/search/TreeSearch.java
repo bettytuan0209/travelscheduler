@@ -2,38 +2,61 @@ package search;
 
 import state.SearchState;
 
+/**
+ * The generic tree search algorithm that can become different tree search
+ * strategies with different StatesContainer. Examples include DFS, BFS, and
+ * AStar
+ * 
+ * @author chiao-yutuan
+ * 
+ */
 public class TreeSearch {
-
-	private StatesContainer states;
+	
+	private StatesContainer statesContainer;
 	private int numExpanded;
-
-	public TreeSearch(StatesContainer states, SearchState initial) {
-		states.add(initial);
-		this.states = states;
+	
+	/**
+	 * Constructor. Needs a StatesContainer object and an intiail search state
+	 * 
+	 * @param statesContainer
+	 *            The container for the states. This will determine what kind of
+	 *            tree search it is
+	 * @param initial
+	 *            The initial state to be inserted into the container at
+	 *            construction time
+	 */
+	public TreeSearch(StatesContainer statesContainer, SearchState initial) {
+		statesContainer.add(initial);
+		this.statesContainer = statesContainer;
 		numExpanded = 0;
 	}
-
-	public int getNumExpanded() {
-		return numExpanded;
-	}
-
+	
+	/**
+	 * Perform the tree search and find the next goal state
+	 * 
+	 * @return The next goal SearchState
+	 */
 	public SearchState nextGoal() {
 		SearchState result = null;
-		while (!states.isEmpty()) {
-			SearchState toExpand = states.pop();
+		while (!statesContainer.isEmpty()) {
+			SearchState toExpand = statesContainer.pop();
 			numExpanded++;
-
+			
 			// goal check
 			if (toExpand.checkGoal()) {
 				return toExpand;
 			}
-
+			
 			// expand and insert successors
-			states.addAll(toExpand.successors());
-
+			statesContainer.addAll(toExpand.successors());
+			
 		}
-
+		
 		return result;
 	}
-
+	
+	public int getNumExpanded() {
+		return numExpanded;
+	}
+	
 }

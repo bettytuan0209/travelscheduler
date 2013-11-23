@@ -13,6 +13,9 @@ import activities.Location;
 public class ActivityTest {
 	Activity activity;
 	
+	/**
+	 * Test constructor
+	 */
 	@Test
 	public void testActivityDuration() {
 		Duration duration = new Duration(2);
@@ -28,6 +31,9 @@ public class ActivityTest {
 		Assert.assertFalse(copy == activity);
 	}
 	
+	/**
+	 * Test constructor
+	 */
 	@Test
 	public void testActivityStringDurationLocation() {
 		Duration duration = new Duration(2);
@@ -42,6 +48,9 @@ public class ActivityTest {
 		
 	}
 	
+	/**
+	 * Test constructor
+	 */
 	@Test
 	public void testActivityStringDurationLegalTimeline() {
 		Duration duration = new Duration(2);
@@ -61,6 +70,9 @@ public class ActivityTest {
 				activity.legalTimeline.lastEndTime());
 	}
 	
+	/**
+	 * Test constructor
+	 */
 	@Test
 	public void testActivityStringDurationLocationLegalTimeline() {
 		Duration duration = new Duration(2);

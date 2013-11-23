@@ -12,13 +12,48 @@ import schedulable.LegalTime;
 import schedulable.Schedulable;
 import util.Util;
 
+/**
+ * This extends the Timeline such that it checks that everything on it is an
+ * instance of LegalTime. It also contains some helpful methods that are
+ * specific to LegalTimes
+ * 
+ * @author chiao-yutuan
+ * 
+ */
 public class LegalTimeline extends Timeline {
 	private static final long serialVersionUID = 6861305297042866238L;
 	
+	/**
+	 * Wrapper around the parent constructor. The treemap will be initiated but
+	 * no schedulable is scheduled. Note that since the interval class is
+	 * exclusive of end time, we add 1 millisecond to the end time make it
+	 * inclusive of the end time
+	 * 
+	 * @param interval
+	 *            The interval during which this timeline is concerned with.
+	 *            Note that timeline automatically adds 1 millisecond at the end
+	 */
 	public LegalTimeline(Interval interval) {
 		super(interval);
 	}
 	
+	/**
+	 * 
+	 * Constructor that takes a treemap of start time to Schedulable. Timeline
+	 * will create the interval based on the scheduled data (aka the interval
+	 * will start when the first scheduled event starts and end when the last
+	 * event ends plus 1ms). The constructor will iterate through the schedule
+	 * and check for invalid entries (overlaps) and insert them one by one so
+	 * that the class contains a copy of the passed in object. Will throw an
+	 * exception if scheduling fails (because of overlaps).
+	 * 
+	 * @throws IllegalArgumentException
+	 *             Throws exception if there is an overlap in the treemap
+	 * 
+	 * @param schedule
+	 *            The schedule represented by a treemap
+	 * 
+	 */
 	public LegalTimeline(TreeMap<DateTime, Schedulable> schedule) {
 		
 		if (schedule.isEmpty()) {
@@ -44,6 +79,18 @@ public class LegalTimeline extends Timeline {
 		}
 	}
 	
+	/**
+	 * A constructor that contains both an interval and a treemap. See public
+	 * Timeline(TreeMap<DateTime, Schedulable> schedule) for constructing with
+	 * an existing schedule. The Timeline will contain a new Interval with 1
+	 * millisecond added at the end
+	 * 
+	 * @param interval
+	 *            The interval of the timeline
+	 * @param schedule
+	 *            The schedule represented as a treemap
+	 * 
+	 */
 	public LegalTimeline(Interval interval,
 			TreeMap<DateTime, Schedulable> schedule) {
 		this(schedule);
@@ -51,11 +98,34 @@ public class LegalTimeline extends Timeline {
 				.plus(1));
 	}
 	
+	/**
+	 * Scheule a free LegalTime
+	 * 
+	 * @param start
+	 *            The exact start time of this LegalTime segment
+	 * @param end
+	 *            The exact end time of this LegalTime segment
+	 * 
+	 * @return True if scheduled successfully. False if otherwise
+	 */
 	public boolean schedule(long start, long end) {
 		return privateSchedule(new DateTime(start), new LegalTime(new Duration(
 				end - start)));
 	}
 	
+	/**
+	 * Scheule a Schedulable at a specific start time. Will throw an exception
+	 * if the Schedulable is not an instance of LegalTime
+	 * 
+	 * @param startTime
+	 *            The exact time to schedule it
+	 * @param schedulable
+	 *            The LegalTime to schedule
+	 * @throws ClassCastException
+	 *             Throws exception if the Schedulable passed in is not an
+	 *             instance of LegalTime
+	 * @return True if scheduled successfully. False if otherwise
+	 */
 	@Override
 	public boolean schedule(DateTime startTime, Schedulable legalTime) {
 		if (!(legalTime instanceof LegalTime)) {
@@ -67,24 +137,44 @@ public class LegalTimeline extends Timeline {
 		
 	}
 	
+	/**
+	 * Automatically goes through the LegalTimeline and set everything before
+	 * the given time as not available. If the bound occurs in the middle of a
+	 * LegalTime. This method will break it and re-schedule the first half as
+	 * not available and the second half as available
+	 * 
+	 * @param start
+	 *            The exact earliest available time. Anything before that is
+	 *            unavailable. Anything at or after this time is not changed
+	 * @throws ClassCastException
+	 *             Throws exception if some Schedulable on the LegalTimeline is
+	 *             not a LegalTime
+	 * @return True if procedure succeeded. False if something went wrong when
+	 *         trying to break 1 segment and re-schedule the 2 halves
+	 */
 	public boolean setEarliestAvailable(DateTime start) {
 		Iterator<Map.Entry<DateTime, Schedulable>> itr = schedule.entrySet()
 				.iterator();
 		while (itr.hasNext()) {
 			Map.Entry<DateTime, Schedulable> scheduled = itr.next();
 			
+			// some Schedulable is not an instance of LegalTime
 			if (!(scheduled.getValue() instanceof LegalTime)) {
 				throw new ClassCastException(
 						"Cannot type cast schedulable to LegalTime");
 			}
 			
+			// The next Schedulable is at or after the bound, we are done.
 			if (!scheduled.getKey().isBefore(start)) {
 				return true;
 				
 			} else if (!Util.getEndTime(scheduled).isAfter(start)) {
+				// entire Schedulable is before the bound, set availability to
+				// false
 				((LegalTime) scheduled.getValue()).available = false;
 				
 			} else {
+				// the bound occurs in the middle of this Schedulable
 				Duration available = scheduled.getValue().getDuration()
 						.minus(new Duration(scheduled.getKey(), start));
 				Duration unavailable = scheduled.getValue().getDuration()
@@ -104,6 +194,18 @@ public class LegalTimeline extends Timeline {
 		return true;
 	}
 	
+	/**
+	 * Checks if there is enough legal time available to schedule something.
+	 * This is usually used to do forward checking
+	 * 
+	 * @param duration
+	 *            The duration of whatever you are checking availability for
+	 * @throws ClassCastExcpetion
+	 *             throws exception if some Schedulable is not an instance of
+	 *             LegalTime
+	 * @return True if there exists some LegalTime segment that is available and
+	 *         is long enough to cover the duration given
+	 */
 	public boolean enoughLegalTimes(Duration duration) {
 		Iterator<Map.Entry<DateTime, Schedulable>> itr = schedule.entrySet()
 				.iterator();
@@ -124,10 +226,19 @@ public class LegalTimeline extends Timeline {
 		return false;
 	}
 	
+	/**
+	 * Find the intersection of 2 legalTimeline's
+	 * 
+	 * @param another
+	 *            Another LegalTimeline to intersect with
+	 * @return the LegalTimeline that consists of the intersection of the two
+	 *         LegalTimeline's
+	 */
+	
 	public LegalTimeline intersect(LegalTimeline another) {
 		LegalTimeline intersection;
 		
-		// check for boundary
+		// check for boundary cases
 		if (isEmpty()
 				|| another.isEmpty()
 				|| Util.getEndTime(schedule.lastEntry()).isBefore(
@@ -137,6 +248,8 @@ public class LegalTimeline extends Timeline {
 			return new LegalTimeline(new Interval(0, 0));
 		}
 		
+		// Creates a LegalTimeline that has the interval from the latest start
+		// time to the earliest end time of the two timelines
 		DateTime latestStart = this.later(schedule.firstKey(),
 				another.schedule.firstKey());
 		DateTime earliestEnd = earlier(Util.getEndTime(schedule.lastEntry()),
