@@ -117,4 +117,29 @@ public class TreeSearchTest {
 		
 	}
 	
+	public static void testTb3Goal(TimeBlock tb) {
+		TreeMap<DateTime, Schedulable> map = tb.getScheduledActivities()
+				.getSchedule();
+		
+		// 0 - 0 start, 1 - 6 transportation, 6 - 10 hiking
+		// 10 - 13 transportation, 15 - 20 skiing
+		// 20 - 22 transportation, 22 - 22 end
+		Assert.assertEquals(new Location(0, 0),
+				((Activity) (map.get(new DateTime(0)))).location);
+		Assert.assertEquals(new Duration(5), map.get(new DateTime(1))
+				.getDuration());
+		Assert.assertEquals("hiking",
+				((Activity) (map.get(new DateTime(6)))).title);
+		Assert.assertEquals(new Duration(3), map.get(new DateTime(10))
+				.getDuration());
+		Assert.assertEquals("skiing",
+				((Activity) (map.get(new DateTime(15)))).title);
+		Assert.assertEquals(new Duration(2), map.get(new DateTime(20))
+				.getDuration());
+		Assert.assertEquals(new Location(0, 0),
+				((Activity) (map.get(new DateTime(22)))).location);
+		Assert.assertEquals(new DateTime(22), tb.lastEndTime());
+		
+	}
+	
 }

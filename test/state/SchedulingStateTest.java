@@ -25,13 +25,18 @@ import util.DeepCopy;
 import activities.Location;
 
 public class SchedulingStateTest {
-	public static SchedulingState state1;
-	public static SchedulingState state2;
+	public static SchedulingState state1; // Basic. Every activity has the same
+											// legal time. Only check for
+											// optimization
+	public static SchedulingState state2; // Forwarchecking. Recognize end ends
+	public static SchedulingState state3; // Waits between schedule due to late
+											// legaltimes
 	public static Activity start, end;
 	public static SimpleWeightedGraph<Location, Transportation> graph = new SimpleWeightedGraph<Location, Transportation>(
 			Transportation.class);
 	public static TimeBlock tb1;
 	public static TimeBlock tb2;
+	public static TimeBlock tb3;
 	
 	@BeforeClass
 	public static void init() {
@@ -328,11 +333,57 @@ public class SchedulingStateTest {
 		
 	}
 	
+	@Test
+	public void testSuccessors3() {
+		ArrayList<SearchState> successors = new ArrayList<SearchState>();
+		
+		// depth 1:
+		// 1. start - skiing
+		// 2. start - hiking
+		successors = state3.successors();
+		Assert.assertEquals(2, successors.size());
+		for (int i = 0; i < successors.size(); i++) {
+			SchedulingState child = (SchedulingState) successors.get(i);
+			TreeMap<DateTime, Schedulable> map = child.getTb()
+					.getScheduledActivities().getSchedule();
+			switch ((int) child.getTb().lastEndTime().getMillis()) {
+			case 20:
+				// 0 - 0 start, 1 - 3 transportation, 15 - 20 skiing
+				Assert.assertEquals(start, map.get(new DateTime(0)));
+				Assert.assertEquals(new Duration(2), map.get(new DateTime(1))
+						.getDuration());
+				Assert.assertEquals("skiing",
+						((Activity) (map.get(new DateTime(15)))).title);
+				Assert.assertFalse(child.checkGoal());
+				break;
+			
+			case 10:
+				// 0 - 0 start, 1 - 6 transportation, 6 - 10 hiking
+				Assert.assertEquals(start, map.get(new DateTime(0)));
+				Assert.assertEquals(new Duration(5), map.get(new DateTime(1))
+						.getDuration());
+				Assert.assertEquals("hiking",
+						((Activity) (map.get(new DateTime(6)))).title);
+				Assert.assertFalse(child.checkGoal());
+				break;
+			
+			default:
+				fail("cannot find successor match");
+				break;
+			}
+			Assert.assertEquals(1, child.getActivities().size());
+			
+		}
+		
+	}
+	
 	public static void initHelper() {
 		// building basics
 		tb1 = new TimeBlock(1, new Interval(1, 30), new Location(0, 0),
 				new Location(0, 0));
 		tb2 = new TimeBlock(2, new Interval(8, 30), new Location(0, 0),
+				new Location(0, 0));
+		tb3 = new TimeBlock(3, new Interval(1, 25), new Location(0, 0),
 				new Location(0, 0));
 		start = new Activity("At start location", new Duration(0),
 				new Location(0, 0));
@@ -350,6 +401,7 @@ public class SchedulingStateTest {
 		Activity park = new Activity("park", new Duration(1),
 				new Location(3, 3), (LegalTimeline) DeepCopy.copy(legal1));
 		
+		// building AST2 activities
 		legal1 = new LegalTimeline(new Interval(6, 26));
 		Assert.assertTrue(legal1.schedule(6, 26));
 		Activity beach = new Activity("beach", new Duration(2), new Location(4,
@@ -363,6 +415,17 @@ public class SchedulingStateTest {
 		Assert.assertTrue(legal1.schedule(13, 16));
 		Activity temple = new Activity("temple", new Duration(3), new Location(
 				6, 6), legal1);
+		
+		// building AST3 activities
+		legal1 = new LegalTimeline(new Interval(1, 23));
+		Assert.assertTrue(legal1.schedule(1, 7));
+		Assert.assertTrue(legal1.schedule(15, 23));
+		Activity skiing = new Activity("skiing", new Duration(5), new Location(
+				7, 7), legal1);
+		legal1 = new LegalTimeline(new Interval(3, 30));
+		Assert.assertTrue(legal1.schedule(3, 30));
+		Activity hiking = new Activity("hiking", new Duration(4), new Location(
+				8, 8), legal1);
 		
 		// building tb1
 		ArrayList<TimeBlock> availableTBs = new ArrayList<TimeBlock>();
@@ -380,6 +443,13 @@ public class SchedulingStateTest {
 		activities2.add(gallery);
 		activities2.add(temple);
 		
+		// building tb3
+		availableTBs = new ArrayList<TimeBlock>();
+		availableTBs.add(tb3);
+		HashSet<Activity> activities3 = new HashSet<Activity>();
+		activities3.add(skiing);
+		activities3.add(hiking);
+		
 		// build graph
 		graph.addVertex(start.location);
 		graph.addVertex(museum.location);
@@ -388,7 +458,10 @@ public class SchedulingStateTest {
 		graph.addVertex(beach.location);
 		graph.addVertex(gallery.location);
 		graph.addVertex(temple.location);
+		graph.addVertex(skiing.location);
+		graph.addVertex(hiking.location);
 		
+		// the part for AST1
 		graph.addEdge(museum.location, concert.location, new Transportation(
 				new Duration(3)));
 		graph.addEdge(park.location, museum.location, new Transportation(
@@ -402,6 +475,7 @@ public class SchedulingStateTest {
 		graph.addEdge(start.location, park.location, new Transportation(
 				new Duration(3)));
 		
+		// the part for AST2
 		graph.addEdge(beach.location, temple.location, new Transportation(
 				new Duration(2)));
 		graph.addEdge(gallery.location, temple.location, new Transportation(
@@ -415,8 +489,17 @@ public class SchedulingStateTest {
 		graph.addEdge(start.location, beach.location, new Transportation(
 				new Duration(3)));
 		
+		// the part for AST3
+		graph.addEdge(skiing.location, hiking.location, new Transportation(
+				new Duration(3)));
+		graph.addEdge(start.location, skiing.location, new Transportation(
+				new Duration(2)));
+		graph.addEdge(start.location, hiking.location, new Transportation(
+				new Duration(5)));
+		
 		state1 = new SchedulingState(tb1, graph, activities1);
 		state2 = new SchedulingState(tb2, graph, activities2);
+		state3 = new SchedulingState(tb3, graph, activities3);
 		
 	}
 }

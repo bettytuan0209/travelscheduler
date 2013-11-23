@@ -8,6 +8,7 @@ import org.joda.time.DateTime;
 import schedulable.Activity;
 import schedulable.Schedulable;
 import schedulable.Transportation;
+import time.TimeBlock;
 import time.Timeline;
 
 /**
@@ -19,6 +20,19 @@ import time.Timeline;
  */
 
 public class Debugger {
+	
+	/**
+	 * Print out the index of the timeblock and then iterate through a timeline
+	 * and print out all the schedulables
+	 * 
+	 * @param tb
+	 *            The Timeblock whose timeline will be printed
+	 */
+	public static void printSchedulables(TimeBlock tb) {
+		System.out.println("==================== TimeBlock " + tb.getIndex()
+				+ " ====================");
+		printSchedulables(tb.getScheduledActivities());
+	}
 	
 	/**
 	 * Iterate through a timeline and print out all the schedulables

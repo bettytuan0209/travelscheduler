@@ -41,6 +41,13 @@ public class SchedulerTest {
 				SchedulingStateTest.state2.getActivities(), new Duration(9));
 		pairs.put(SchedulingStateTest.tb2, ast2);
 		
+		// The third TB - AST pair
+		availableTBs = new ArrayList<TimeBlock>();
+		availableTBs.add(SchedulingStateTest.tb3);
+		ActivitySpanningTree ast3 = new ActivitySpanningTree(3, availableTBs,
+				SchedulingStateTest.state3.getActivities(), new Duration(9));
+		pairs.put(SchedulingStateTest.tb3, ast3);
+		
 	}
 	
 	@Test
@@ -48,7 +55,7 @@ public class SchedulerTest {
 		ArrayList<TimeBlock> tbs = Scheduler.autoScheduleAll(graph, pairs);
 		Assert.assertNotNull(tbs);
 		for (TimeBlock tb : tbs) {
-			Debugger.printSchedulables(tb.getScheduledActivities());
+			Debugger.printSchedulables(tb);
 			System.out.println();
 			switch (tb.getIndex()) {
 			case 1:
@@ -56,6 +63,9 @@ public class SchedulerTest {
 				break;
 			case 2:
 				TreeSearchTest.testTb2Goal(tb);
+				break;
+			case 3:
+				TreeSearchTest.testTb3Goal(tb);
 				break;
 			
 			}
