@@ -4,6 +4,7 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.jgrapht.graph.SimpleWeightedGraph;
@@ -21,6 +22,7 @@ import schedulable.Transportation;
 import search.AStar;
 import time.LegalTimeline;
 import time.TimeBlock;
+import util.Debugger;
 import util.DeepCopy;
 import activities.Location;
 
@@ -374,6 +376,37 @@ public class SchedulingStateTest {
 			Assert.assertEquals(1, child.getActivities().size());
 			
 		}
+		
+	}
+	
+	@Test
+	public void testSuccessors4() {
+		ArrayList<SearchState> successors = new ArrayList<SearchState>();
+		
+		// create activities
+		LegalTimeline legal1 = new LegalTimeline(new Interval(1, 10));
+		Assert.assertTrue(legal1.schedule(1, 10));
+		Activity shower = new Activity("shower", new Duration(2), new Location(
+				7, 7), legal1);
+		Activity tv = new Activity("watch TV", new Duration(3), new Location(7,
+				7), legal1);
+		
+		Set<Activity> activitiesSameLoc = new HashSet<Activity>();
+		activitiesSameLoc.add(shower);
+		activitiesSameLoc.add(tv);
+		
+		SchedulingState state4 = new SchedulingState(tb3, graph,
+				activitiesSameLoc);
+		state4.activities.add(shower);
+		state4.activities.add(tv);
+		
+		// start - shower - tv - end
+		successors = state4.successors();
+		successors = successors.get(0).successors();
+		successors = successors.get(0).successors();
+		Assert.assertEquals(1, successors.size());
+		Debugger.printSchedulables(((SchedulingState) successors.get(0))
+				.getTb());
 		
 	}
 	

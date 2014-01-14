@@ -3,7 +3,6 @@ package state;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -69,15 +68,13 @@ public class SchedulingState implements SearchState,
 		ArrayList<SearchState> successors = new ArrayList<SearchState>();
 		
 		Timeline scheduledActivities = tb.getScheduledActivities();
-		Activity start = new Activity("At start location", new Duration(0),
-				tb.getStartLocation());
-		Activity end = new Activity("At end location", new Duration(0),
-				tb.getEndLocation());
 		
 		// if nothing scheduled yet, schedule startLocation
 		if (scheduledActivities.isEmpty()
 				&& !scheduledActivities.hasScheduleStart(scheduledActivities
 						.getInterval().getStart().minus(1))) {
+			Activity start = new Activity("At start location", new Duration(0),
+					tb.getStartLocation());
 			
 			tb.scheduleBeforeTb(start);
 			
@@ -85,19 +82,28 @@ public class SchedulingState implements SearchState,
 		
 		// if out of activities, schedule to return to endLocation
 		if (activities.isEmpty()) {
+			Activity end = new Activity("At end location", new Duration(0),
+					tb.getEndLocation());
+			
 			TreeMap<DateTime, Schedulable> schedule = tb
 					.getScheduledActivities().getSchedule();
 			Schedulable last = schedule.lastEntry().getValue();
-			if (last instanceof Activity
-					&& !((Activity) last).location.equals(tb.getEndLocation())) {
+			if (last instanceof Activity) {
 				SchedulingState newState = this.clone();
-				Transportation edge = graph.getEdge(((Activity) tb
-						.getLastScheduled().getValue()).location, end.location);
-				if (edge != null
-						&& newState.tb.schedule(tb.lastEndTime(), edge)
-						&& newState.tb.scheduleAfterTb(end)) {
-					
-					successors.add(newState);
+				Transportation edge;
+				if (!((Activity) last).location.equals(tb.getEndLocation())) {
+					edge = graph.getEdge(((Activity) tb.getLastScheduled()
+							.getValue()).location, end.location);
+					if (edge != null && newState.tb.scheduleAfter(edge)
+							&& newState.tb.scheduleAfterTb(end)) {
+						
+						successors.add(newState);
+					}
+				} else if (!last.equals(end)) {
+					if (newState.tb.scheduleAfterTb(end)) {
+						
+						successors.add(newState);
+					}
 				}
 			}
 			return successors;
@@ -109,21 +115,35 @@ public class SchedulingState implements SearchState,
 			SchedulingState newState = this.clone();
 			
 			// find last activity
-			Map.Entry<DateTime, Schedulable> last = tb.getLastScheduled();
-			Transportation edge = graph.getEdge(
-					((Activity) last.getValue()).location, activity.location);
+			Schedulable last = tb.getLastScheduled().getValue();
 			
-			// if you can schedule this activity meeting constraints,
-			// add as a successor
-			if (edge != null
-					&& newState.tb.scheduleAfter(newState.tb.lastEndTime(),
-							edge)
-					&& newState.tb.scheduleAfter(newState.tb.lastEndTime(),
-							activity) && newState.activities.remove(activity)
-					&& newState.forwardChecking()) {
+			Transportation edge;
+			// if the two activities have different locations
+			if (!((Activity) last).location.equals(activity.location)) {
+				edge = graph.getEdge(((Activity) last).location,
+						activity.location);
 				
-				successors.add(newState);
-				
+				// if you can schedule this activity meeting constraints,
+				// add as a successor
+				if (edge != null
+						&& newState.tb.scheduleAfter(newState.tb.lastEndTime(),
+								edge)
+						&& newState.tb.scheduleAfter(newState.tb.lastEndTime(),
+								activity)
+						&& newState.activities.remove(activity)
+						&& newState.forwardChecking()) {
+					
+					successors.add(newState);
+					
+				}
+			} else { // if two activities are at the same location
+				if (newState.tb.scheduleAfter(newState.tb.lastEndTime(),
+						activity)
+						&& newState.activities.remove(activity)
+						&& newState.forwardChecking()) {
+					successors.add(newState);
+					
+				}
 			}
 			
 		}
