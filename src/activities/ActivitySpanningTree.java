@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
@@ -20,7 +21,7 @@ import util.DeepCopy;
 
 public class ActivitySpanningTree implements Serializable {
 	private static final long serialVersionUID = 6797165864508180241L;
-	public int index;
+	private int index;
 	private ArrayList<TimeBlock> availableTBs;
 	private Set<Activity> activities;
 	private Duration sumActivitiesTime;
@@ -84,6 +85,30 @@ public class ActivitySpanningTree implements Serializable {
 	
 	public ArrayList<TimeBlock> getAvailableTBs() {
 		return availableTBs;
+	}
+	
+	public int getIndex() {
+		return index;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ActivitySpanningTree) {
+			ActivitySpanningTree other = (ActivitySpanningTree) obj;
+			if (index == other.index && availableTBs.equals(other.availableTBs)
+					&& activities.equals(other.activities)
+					&& sumActivitiesTime.equals(other.sumActivitiesTime)) {
+				return true;
+			}
+			
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder().append(index).append(availableTBs)
+				.append(activities).append(sumActivitiesTime).toHashCode();
 	}
 	
 }

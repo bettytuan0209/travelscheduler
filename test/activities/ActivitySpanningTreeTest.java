@@ -48,7 +48,7 @@ public class ActivitySpanningTreeTest {
 		
 		// An empty AST
 		ast = new ActivitySpanningTree(0, tbs);
-		Assert.assertEquals(0, ast.index);
+		Assert.assertEquals(0, ast.getIndex());
 		Assert.assertEquals(tbs, ast.getAvailableTBs());
 		Assert.assertTrue(ast.getActivities().isEmpty());
 		Assert.assertEquals(0, ast.getSumActivitiesTime().getMillis());
