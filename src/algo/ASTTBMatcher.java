@@ -28,7 +28,7 @@ public class ASTTBMatcher {
 		MatchingState goal;
 		while ((goal = (MatchingState) searcher.nextGoal()) != null) {
 			ArrayList<TimeBlock> schedule = Scheduler.autoScheduleAll(graph,
-					goal.getPairs());
+					goal.getMatches());
 			if (schedule != null) {
 				return schedule;
 			}
