@@ -31,11 +31,8 @@ public class MatchingState implements SearchState, Serializable {
 			ActivitySpanningTree ast = itr.next();
 			asts.remove(ast);
 			
-			System.out.println("Working on ast " + ast.getIndex());
-			
 			// for each tb that this ast can match with
 			for (TimeBlock tb : ast.getAvailableTBs()) {
-				System.out.println("Considering " + tb.getIndex());
 				
 				// if this tb hasn't been matched with another ast
 				if (!matches.containsKey(tb)) {
@@ -47,7 +44,6 @@ public class MatchingState implements SearchState, Serializable {
 					
 					if (newState.matches.put(tb, ast) == null) {
 						successors.add(newState);
-						System.out.println("added a new state");
 					} else {
 						throw new IllegalStateException(
 								"Internal inconsistency. Duplicate matching to the same TB");
@@ -55,7 +51,6 @@ public class MatchingState implements SearchState, Serializable {
 					
 				}
 			}
-			System.out.println();
 			
 		} else {
 			throw new IllegalStateException("Unexceptedly out of tree nodes");
