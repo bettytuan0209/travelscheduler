@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.jgrapht.graph.SimpleWeightedGraph;
-import org.joda.time.Duration;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,22 +29,25 @@ public class SchedulerTest {
 		// The first TB - AST pair
 		ArrayList<TimeBlock> availableTBs = new ArrayList<TimeBlock>();
 		availableTBs.add(SchedulingStateTest.tb1);
-		ActivitySpanningTree ast1 = new ActivitySpanningTree(1, availableTBs,
-				SchedulingStateTest.state1.getActivities(), new Duration(7));
+		ActivitySpanningTree ast1 = new ActivitySpanningTree(1, availableTBs);
+		Assert.assertTrue(ast1.addActivities(SchedulingStateTest.state1
+				.getActivities()));
 		pairs.put(SchedulingStateTest.tb1, ast1);
 		
 		// The second TB - AST pair
 		availableTBs = new ArrayList<TimeBlock>();
 		availableTBs.add(SchedulingStateTest.tb2);
-		ActivitySpanningTree ast2 = new ActivitySpanningTree(2, availableTBs,
-				SchedulingStateTest.state2.getActivities(), new Duration(9));
+		ActivitySpanningTree ast2 = new ActivitySpanningTree(2, availableTBs);
+		Assert.assertTrue(ast2.addActivities(SchedulingStateTest.state2
+				.getActivities()));
 		pairs.put(SchedulingStateTest.tb2, ast2);
 		
 		// The third TB - AST pair
 		availableTBs = new ArrayList<TimeBlock>();
 		availableTBs.add(SchedulingStateTest.tb3);
-		ActivitySpanningTree ast3 = new ActivitySpanningTree(3, availableTBs,
-				SchedulingStateTest.state3.getActivities(), new Duration(9));
+		ActivitySpanningTree ast3 = new ActivitySpanningTree(3, availableTBs);
+		Assert.assertTrue(ast3.addActivities(SchedulingStateTest.state3
+				.getActivities()));
 		pairs.put(SchedulingStateTest.tb3, ast3);
 		
 	}
