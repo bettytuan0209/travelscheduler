@@ -386,10 +386,16 @@ public class SchedulingStateTest {
 		// create activities
 		LegalTimeline legal1 = new LegalTimeline(new Interval(1, 10));
 		Assert.assertTrue(legal1.schedule(1, 10));
+		
+		Activity swimming = new Activity("swimming", new Duration(2),
+				new Location(7, 7), legal1);
+		
+		legal1 = new LegalTimeline(new Interval(1, 20));
+		legal1.schedule(10, 15);
 		Activity shower = new Activity("shower", new Duration(2), new Location(
-				7, 7), legal1);
-		Activity tv = new Activity("watch TV", new Duration(3), new Location(7,
-				7), legal1);
+				0, 0), legal1);
+		Activity tv = new Activity("watch TV", new Duration(3), new Location(0,
+				0), legal1);
 		
 		Set<Activity> activitiesSameLoc = new HashSet<Activity>();
 		activitiesSameLoc.add(shower);
@@ -397,11 +403,13 @@ public class SchedulingStateTest {
 		
 		SchedulingState state4 = new SchedulingState(tb3, graph,
 				activitiesSameLoc);
+		state4.activities.add(swimming);
 		state4.activities.add(shower);
 		state4.activities.add(tv);
 		
-		// start - shower - tv - end
+		// start - shower - swimming - tv - end
 		successors = state4.successors();
+		successors = successors.get(0).successors();
 		successors = successors.get(0).successors();
 		successors = successors.get(0).successors();
 		Assert.assertEquals(1, successors.size());
