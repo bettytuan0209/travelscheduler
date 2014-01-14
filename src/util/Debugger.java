@@ -6,6 +6,7 @@ import java.util.Set;
 import org.joda.time.DateTime;
 
 import schedulable.Activity;
+import schedulable.LegalTime;
 import schedulable.Schedulable;
 import schedulable.Transportation;
 import time.TimeBlock;
@@ -53,8 +54,13 @@ public class Debugger {
 			Schedulable value = entry.getValue();
 			if (value instanceof Transportation) {
 				System.out.println("transportation");
-			} else {
+			} else if (value instanceof LegalTime) {
+				System.out.println("LegalTime");
+			} else if (value instanceof Activity) {
 				System.out.println(((Activity) value).title);
+			} else {
+				throw new ClassCastException(
+						"Cannot recognize schedulable class type");
 			}
 			
 		}
