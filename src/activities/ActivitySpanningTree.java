@@ -2,6 +2,8 @@ package activities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -10,63 +12,69 @@ import org.joda.time.Duration;
 import org.joda.time.Interval;
 
 import schedulable.Activity;
+import schedulable.LegalTime;
 import schedulable.Schedulable;
 import time.LegalTimeline;
 import time.TimeBlock;
+import util.DeepCopy;
 
 public class ActivitySpanningTree implements Serializable {
 	private static final long serialVersionUID = 6797165864508180241L;
 	public int index;
-	public ArrayList<TimeBlock> availableTBs;
-	// private SimpleGraph<Activity, DefaultEdge> tree;
+	private ArrayList<TimeBlock> availableTBs;
 	private Set<Activity> activities;
 	private Duration sumActivitiesTime;
 	
-	public ActivitySpanningTree(int index, ArrayList<TimeBlock> availableTBs,
-	// SimpleGraph<Activity, DefaultEdge> tree
-			Set<Activity> activities, Duration sumActivitiesTime) {
+	public ActivitySpanningTree(int index, ArrayList<TimeBlock> tbs) {
 		this.index = index;
-		this.availableTBs = availableTBs;
-		// this.tree = tree;
-		this.activities = activities;
-		this.sumActivitiesTime = sumActivitiesTime;
+		this.availableTBs = tbs;
+		activities = new HashSet<Activity>();
+		sumActivitiesTime = new Duration(0);
+		
+	}
+	
+	public boolean addActivities(Set<Activity> activities) {
+		ActivitySpanningTree clone = (ActivitySpanningTree) DeepCopy.copy(this);
+		Iterator<Activity> itr = activities.iterator();
+		while (itr.hasNext()) {
+			if (!clone.addActivity(itr.next())) {
+				return false;
+			}
+		}
+		this.availableTBs = clone.availableTBs;
+		this.activities = clone.activities;
+		this.sumActivitiesTime = clone.sumActivitiesTime;
+		return true;
 	}
 	
 	public boolean addActivity(Activity activity) {
 		
 		// check for commonTBs
-		ArrayList<Integer> commonTBs = new ArrayList<Integer>();
+		ArrayList<TimeBlock> commonTBs = new ArrayList<TimeBlock>();
 		for (TimeBlock tb : availableTBs) {
 			TreeMap<DateTime, Schedulable> map = new TreeMap<DateTime, Schedulable>();
 			Interval interval = tb.getInterval();
 			map.put(new DateTime(interval.getStart()),
-					new Activity(interval.toDuration()));
+					new LegalTime(interval.toDuration()));
 			Activity tester = new Activity("tester", activity.getDuration(),
 					activity.legalTimeline.intersect(new LegalTimeline(map)));
+			
 			if (tester.forwardChecking()) {
-				commonTBs.add(tb.getIndex());
+				commonTBs.add(tb);
 			}
 		}
 		if (commonTBs.isEmpty()) {
 			return false;
 		}
 		
-		// tree.addVertex(activity);
 		activities.add(activity);
-		
-		// update sumActivitiesTime
+		availableTBs = commonTBs;
 		sumActivitiesTime = sumActivitiesTime.plus(activity.getDuration());
 		
 		return true;
 	}
 	
-	// public boolean addEdge(Activity origin, Activity dest, DefaultEdge edge)
-	// {
-	// return tree.addEdge(origin, dest, edge);
-	// }
-	
 	public Set<Activity> getActivities() {
-		// return tree.vertexSet();
 		return activities;
 	}
 	
@@ -74,13 +82,8 @@ public class ActivitySpanningTree implements Serializable {
 		return sumActivitiesTime;
 	}
 	
-	public boolean removeActivity(Activity activity) {
-		// if (tree.removeVertex(activity)) {
-		if (activities.remove(activity)) {
-			sumActivitiesTime = sumActivitiesTime.minus(activity.getDuration());
-			return true;
-		}
-		return false;
+	public ArrayList<TimeBlock> getAvailableTBs() {
+		return availableTBs;
 	}
 	
 }
