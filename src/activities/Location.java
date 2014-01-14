@@ -50,9 +50,8 @@ public class Location implements Serializable {
 	 */
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder()
-		// two randomly chosen prime numbers
-				.append(latitude).append(longitude).toHashCode();
+		return new HashCodeBuilder().append(latitude).append(longitude)
+				.toHashCode();
 	}
 	
 	/***************************** Getters *******************************/
