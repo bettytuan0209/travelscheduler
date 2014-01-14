@@ -22,7 +22,6 @@ import schedulable.Transportation;
 import search.AStar;
 import time.LegalTimeline;
 import time.TimeBlock;
-import util.Debugger;
 import util.DeepCopy;
 import activities.Location;
 
@@ -413,8 +412,6 @@ public class SchedulingStateTest {
 		successors = successors.get(0).successors();
 		successors = successors.get(0).successors();
 		Assert.assertEquals(1, successors.size());
-		Debugger.printSchedulables(((SchedulingState) successors.get(0))
-				.getTb());
 		
 	}
 	

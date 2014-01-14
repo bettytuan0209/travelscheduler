@@ -64,7 +64,6 @@ public class SchedulingState implements SearchState,
 	
 	@Override
 	public ArrayList<SearchState> successors() {
-		
 		ArrayList<SearchState> successors = new ArrayList<SearchState>();
 		
 		Timeline scheduledActivities = tb.getScheduledActivities();
@@ -94,7 +93,9 @@ public class SchedulingState implements SearchState,
 				if (!((Activity) last).location.equals(tb.getEndLocation())) {
 					edge = graph.getEdge(((Activity) tb.getLastScheduled()
 							.getValue()).location, end.location);
-					if (edge != null && newState.tb.scheduleAfter(edge)
+					if (edge != null
+							&& newState.tb
+									.scheduleAfter(tb.lastEndTime(), edge)
 							&& newState.tb.scheduleAfterTb(end)) {
 						
 						successors.add(newState);
