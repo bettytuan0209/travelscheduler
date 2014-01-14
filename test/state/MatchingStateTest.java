@@ -18,44 +18,12 @@ import activities.Location;
 
 public class MatchingStateTest {
 	
-	private static Set<ActivitySpanningTree> asts;
+	public static Set<ActivitySpanningTree> asts;
 	private MatchingState state;
 	
 	@BeforeClass
 	public static void init() {
-		ArrayList<TimeBlock> availableTBs;
-		asts = new HashSet<ActivitySpanningTree>();
-		
-		// build TBs
-		TimeBlock tb1 = new TimeBlock(1, new Interval(1, 20),
-				new Location(0, 0), new Location(0, 0));
-		TimeBlock tb2 = new TimeBlock(2, new Interval(30, 40), new Location(0,
-				0), new Location(0, 0));
-		TimeBlock tb3 = new TimeBlock(3, new Interval(50, 60), new Location(0,
-				0), new Location(0, 0));
-		
-		// build AST1 with TB 2 3
-		availableTBs = new ArrayList<TimeBlock>();
-		Assert.assertTrue(availableTBs.add(tb2));
-		Assert.assertTrue(availableTBs.add(tb3));
-		ActivitySpanningTree ast1 = new ActivitySpanningTree(1, availableTBs);
-		
-		// build AST2 with TB 1 2 3
-		availableTBs = new ArrayList<TimeBlock>();
-		Assert.assertTrue(availableTBs.add(tb1));
-		Assert.assertTrue(availableTBs.add(tb2));
-		Assert.assertTrue(availableTBs.add(tb3));
-		ActivitySpanningTree ast2 = new ActivitySpanningTree(2, availableTBs);
-		
-		// build AST3 with TB 1 3
-		availableTBs = new ArrayList<TimeBlock>();
-		Assert.assertTrue(availableTBs.add(tb1));
-		Assert.assertTrue(availableTBs.add(tb3));
-		ActivitySpanningTree ast3 = new ActivitySpanningTree(3, availableTBs);
-		
-		Assert.assertTrue(asts.add(ast1));
-		Assert.assertTrue(asts.add(ast2));
-		Assert.assertTrue(asts.add(ast3));
+		initHelper();
 	}
 	
 	@Test
@@ -166,8 +134,40 @@ public class MatchingStateTest {
 		
 	}
 	
-	@Test
-	public void testGetPairs() {
+	public static void initHelper() {
+		ArrayList<TimeBlock> availableTBs;
+		asts = new HashSet<ActivitySpanningTree>();
+		
+		// build TBs
+		TimeBlock tb1 = new TimeBlock(1, new Interval(1, 20),
+				new Location(0, 0), new Location(0, 0));
+		TimeBlock tb2 = new TimeBlock(2, new Interval(30, 40), new Location(0,
+				0), new Location(0, 0));
+		TimeBlock tb3 = new TimeBlock(3, new Interval(50, 60), new Location(0,
+				0), new Location(0, 0));
+		
+		// build AST1 with TB 2 3
+		availableTBs = new ArrayList<TimeBlock>();
+		Assert.assertTrue(availableTBs.add(tb2));
+		Assert.assertTrue(availableTBs.add(tb3));
+		ActivitySpanningTree ast1 = new ActivitySpanningTree(1, availableTBs);
+		
+		// build AST2 with TB 1 2 3
+		availableTBs = new ArrayList<TimeBlock>();
+		Assert.assertTrue(availableTBs.add(tb1));
+		Assert.assertTrue(availableTBs.add(tb2));
+		Assert.assertTrue(availableTBs.add(tb3));
+		ActivitySpanningTree ast2 = new ActivitySpanningTree(2, availableTBs);
+		
+		// build AST3 with TB 1 3
+		availableTBs = new ArrayList<TimeBlock>();
+		Assert.assertTrue(availableTBs.add(tb1));
+		Assert.assertTrue(availableTBs.add(tb3));
+		ActivitySpanningTree ast3 = new ActivitySpanningTree(3, availableTBs);
+		
+		Assert.assertTrue(asts.add(ast1));
+		Assert.assertTrue(asts.add(ast2));
+		Assert.assertTrue(asts.add(ast3));
 	}
 	
 }
