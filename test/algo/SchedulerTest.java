@@ -22,6 +22,14 @@ public class SchedulerTest {
 	
 	@BeforeClass
 	public static void init() {
+		System.out
+				.println("****************************************************");
+		System.out
+				.println("****************** Scheduler Test ******************");
+		System.out
+				.println("****************************************************");
+		System.out.println();
+		
 		SchedulingStateTest.init();
 		graph = SchedulingStateTest.graph;
 		pairs = new HashMap<TimeBlock, ActivitySpanningTree>();
