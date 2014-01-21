@@ -90,7 +90,7 @@ public class ASTTBMatcherTest {
 		Assert.assertTrue(graph.addVertex(hotel));
 		Assert.assertTrue(graph.addVertex(skiing.location));
 		Assert.assertTrue(graph.addEdge(hotel, skiing.location,
-				new Transportation(new Duration(5))));
+				new Transportation(new Duration(5), hotel, skiing.location)));
 		
 		// Try matcher
 		Set<ActivitySpanningTree> asts = new HashSet<ActivitySpanningTree>();

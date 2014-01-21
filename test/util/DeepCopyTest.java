@@ -83,11 +83,11 @@ public class DeepCopyTest {
 		graph.addVertex(concert.location);
 		graph.addVertex(park.location);
 		graph.addEdge(museum.location, concert.location, new Transportation(
-				new Duration(3)));
+				new Duration(3), museum.location, concert.location));
 		graph.addEdge(park.location, museum.location, new Transportation(
-				new Duration(7)));
+				new Duration(7), park.location, museum.location));
 		graph.addEdge(park.location, concert.location, new Transportation(
-				new Duration(2)));
+				new Duration(2), park.location, concert.location));
 		
 		SchedulingState state = new SchedulingState(tb, graph, activities);
 		SchedulingState clone = state.clone();

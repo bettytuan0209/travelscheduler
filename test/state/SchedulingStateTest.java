@@ -501,39 +501,39 @@ public class SchedulingStateTest {
 		
 		// the part for AST1
 		graph.addEdge(museum.location, concert.location, new Transportation(
-				new Duration(3)));
+				new Duration(3), museum.location, concert.location));
 		graph.addEdge(park.location, museum.location, new Transportation(
-				new Duration(7)));
+				new Duration(7), park.location, museum.location));
 		graph.addEdge(park.location, concert.location, new Transportation(
-				new Duration(2)));
+				new Duration(2), park.location, concert.location));
 		graph.addEdge(start.location, concert.location, new Transportation(
-				new Duration(5)));
+				new Duration(5), start.location, concert.location));
 		graph.addEdge(start.location, museum.location, new Transportation(
-				new Duration(4)));
+				new Duration(4), start.location, museum.location));
 		graph.addEdge(start.location, park.location, new Transportation(
-				new Duration(3)));
+				new Duration(3), start.location, park.location));
 		
 		// the part for AST2
 		graph.addEdge(beach.location, temple.location, new Transportation(
-				new Duration(2)));
+				new Duration(2), beach.location, temple.location));
 		graph.addEdge(gallery.location, temple.location, new Transportation(
-				new Duration(5)));
+				new Duration(5), gallery.location, temple.location));
 		graph.addEdge(beach.location, gallery.location, new Transportation(
-				new Duration(3)));
+				new Duration(3), beach.location, gallery.location));
 		graph.addEdge(start.location, temple.location, new Transportation(
-				new Duration(1)));
+				new Duration(1), start.location, temple.location));
 		graph.addEdge(start.location, gallery.location, new Transportation(
-				new Duration(4)));
+				new Duration(4), start.location, gallery.location));
 		graph.addEdge(start.location, beach.location, new Transportation(
-				new Duration(3)));
+				new Duration(3), start.location, beach.location));
 		
 		// the part for AST3
 		graph.addEdge(skiing.location, hiking.location, new Transportation(
-				new Duration(3)));
+				new Duration(3), skiing.location, hiking.location));
 		graph.addEdge(start.location, skiing.location, new Transportation(
-				new Duration(2)));
+				new Duration(2), start.location, skiing.location));
 		graph.addEdge(start.location, hiking.location, new Transportation(
-				new Duration(5)));
+				new Duration(5), start.location, hiking.location));
 		
 		state1 = new SchedulingState(tb1, graph, activities1);
 		state2 = new SchedulingState(tb2, graph, activities2);

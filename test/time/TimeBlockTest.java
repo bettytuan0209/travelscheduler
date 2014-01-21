@@ -109,7 +109,8 @@ public class TimeBlockTest {
 		
 		// no legalTime
 		// schedule: 3 - 5
-		Transportation transport = new Transportation(new Duration(2));
+		Transportation transport = new Transportation(new Duration(2),
+				new Location(0, 0), new Location(0, 0));
 		tb = new TimeBlock(1, new Interval(1, 30), new Location(1, 1),
 				new Location(2, 2));
 		Assert.assertTrue(tb.getScheduledActivities().schedule(new DateTime(3),
