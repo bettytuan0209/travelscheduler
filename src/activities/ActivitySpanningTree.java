@@ -19,12 +19,28 @@ import time.LegalTimeline;
 import time.TimeBlock;
 import util.DeepCopy;
 
+/**
+ * A container for a set of activities.
+ * 
+ * @author chiao-yutuan
+ * 
+ */
+
 public class ActivitySpanningTree implements Serializable {
 	private static final long serialVersionUID = 6797165864508180241L;
 	private int index;
 	private ArrayList<TimeBlock> availableTBs;
 	private Set<Activity> activities;
 	private Duration sumActivitiesTime;
+	
+	/**
+	 * Construct with an index and a list of available TBs
+	 * 
+	 * @param index
+	 *            The index used to identify this AST
+	 * @param tbs
+	 *            The list of TBs that this AST should be able to pair with
+	 */
 	
 	public ActivitySpanningTree(int index, ArrayList<TimeBlock> tbs) {
 		this.index = index;
@@ -34,6 +50,17 @@ public class ActivitySpanningTree implements Serializable {
 		
 	}
 	
+	/**
+	 * Add a set of activities to the AST. This method will check each
+	 * activity's available times and update the availableTBs list accordingly.
+	 * The sum of activities duration will be updated
+	 * 
+	 * @param activities
+	 *            The set of activities to add
+	 * @return whether activities were added successfully. Method will return
+	 *         false with the AST unchanged if adding these activities will
+	 *         result in an empty list of availableTBs
+	 */
 	public boolean addActivities(Set<Activity> activities) {
 		ActivitySpanningTree clone = (ActivitySpanningTree) DeepCopy.copy(this);
 		Iterator<Activity> itr = activities.iterator();
@@ -48,6 +75,17 @@ public class ActivitySpanningTree implements Serializable {
 		return true;
 	}
 	
+	/**
+	 * Add a single activity to the AST. This method will check this activity's
+	 * available times and update the availableTBs list accordingly. The sum of
+	 * activities duration will be updated accordingly
+	 * 
+	 * @param activity
+	 *            The activity to add.
+	 * @return Whether the activity was added successfully. Method will return
+	 *         false with the AST unchanged if adding it will result in an empty
+	 *         list of availableTBs
+	 */
 	public boolean addActivity(Activity activity) {
 		
 		// check for commonTBs
