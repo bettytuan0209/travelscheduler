@@ -203,6 +203,9 @@ public class SchedulingState implements SearchState,
 	 * the lowest h value is placed on top of the priority queue. G value is the
 	 * last end time of the TB. H value is the sum of all unscheduled activities
 	 * 
+	 * @param other
+	 *            The SchedulingState to compare with
+	 * 
 	 * @return A negative integer, zero, or a positive integer as this object is
 	 *         less than, equal to, or greater than the specified object.
 	 */
