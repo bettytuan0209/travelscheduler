@@ -12,7 +12,8 @@ import org.joda.time.Duration;
  * @author chiao-yutuan
  * 
  */
-public class Transportation extends Schedulable implements Serializable {
+public class Transportation extends Schedulable implements Serializable,
+		Comparable<Transportation> {
 	
 	private static final long serialVersionUID = -2891097162573349168L;
 	
@@ -24,6 +25,29 @@ public class Transportation extends Schedulable implements Serializable {
 	 */
 	public Transportation(Duration duration) {
 		this.duration = duration;
+	}
+	
+	/**
+	 * Implements compareTo() for the interface Comparable so that the
+	 * transportation with the shorter duration is placed before those with
+	 * longer duration
+	 * 
+	 * @param other
+	 *            The other transportation to compare with
+	 * 
+	 * @return A negative integer, zero, or a positive integer as this object is
+	 *         less than, equal to, or greater than the specified object.
+	 */
+	@Override
+	public int compareTo(Transportation other) {
+		long result = this.duration.getMillis() - other.duration.getMillis();
+		if (result < 0) {
+			return -1;
+		} else if (result > 0) {
+			return 1;
+		} else {
+			return 0;
+		}
 	}
 	
 }
