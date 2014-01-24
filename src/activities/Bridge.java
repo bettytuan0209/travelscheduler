@@ -2,6 +2,8 @@ package activities;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import schedulable.Activity;
 import schedulable.Transportation;
 
@@ -45,6 +47,25 @@ public class Bridge implements Comparable<Bridge>, Serializable {
 	
 	public Activity getActivity2() {
 		return activity2;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Bridge) {
+			Bridge other = (Bridge) obj;
+			if (edge.equals(other.edge) && activity1.equals(other.activity1)
+					&& activity2.equals(other.activity2)) {
+				return true;
+			}
+			
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder().append(edge).append(activity1)
+				.append(activity2).toHashCode();
 	}
 	
 }

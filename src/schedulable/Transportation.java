@@ -2,6 +2,7 @@ package schedulable;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.joda.time.Duration;
 
 /**
@@ -48,6 +49,23 @@ public class Transportation extends Schedulable implements Serializable,
 		} else {
 			return 0;
 		}
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Transportation) {
+			Transportation other = (Transportation) obj;
+			if (duration.equals(other.duration)) {
+				return true;
+			}
+			
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder().append(duration).toHashCode();
 	}
 	
 }
