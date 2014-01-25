@@ -1,9 +1,7 @@
 package activities;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 import org.joda.time.Duration;
 import org.joda.time.Interval;
@@ -12,6 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import schedulable.Activity;
+import schedulable.Transportation;
 import time.LegalTimeline;
 import time.TimeBlock;
 
@@ -21,6 +20,8 @@ public class ActivitySpanningTreeTest {
 	private static Activity activity1;
 	private static Activity activity2;
 	private static Activity activity3;
+	private static Bridge bridge1and2;
+	private static Bridge bridge2and3;
 	private static ArrayList<TimeBlock> tbs;
 	
 	@BeforeClass
@@ -34,6 +35,10 @@ public class ActivitySpanningTreeTest {
 		activity3 = new Activity("activity3", new Duration(3), new Location(1,
 				1), new LegalTimeline(new Interval(15, 20)));
 		activity3.legalTimeline.schedule(15, 20);
+		bridge1and2 = new Bridge(new Transportation(new Duration(1)),
+				activity1, activity2);
+		bridge2and3 = new Bridge(new Transportation(new Duration(5)),
+				activity2, activity3);
 		TimeBlock tb1 = new TimeBlock(0, new Interval(1, 10),
 				new Location(0, 0), new Location(0, 0));
 		TimeBlock tb2 = new TimeBlock(1, new Interval(15, 30), new Location(0,
@@ -46,78 +51,77 @@ public class ActivitySpanningTreeTest {
 	@Test
 	public void testActivitySpanningTree() {
 		
-		// An empty AST
-		ast = new ActivitySpanningTree(0, tbs);
+		// A standard AST
+		ast = new ActivitySpanningTree(0, activity1);
 		Assert.assertEquals(0, ast.getIndex());
-		Assert.assertEquals(tbs, ast.getAvailableTBs());
-		Assert.assertTrue(ast.getActivities().isEmpty());
-		Assert.assertEquals(0, ast.getSumActivitiesTime().getMillis());
+		Assert.assertEquals(tbs, ast.getAvailableTBs(tbs));
+		Assert.assertEquals(1, ast.getActivities().size());
+		Assert.assertEquals(activity1, ast.getActivities().iterator().next());
+		Assert.assertEquals(1, ast.getSumDuration().getMillis());
 	}
 	
 	@Test
-	public void testAddActivities() {
+	public void testJoinAST() {
 		
-		// Add a set of 2 activities
-		Set<Activity> activities = new HashSet<Activity>();
-		Assert.assertTrue(activities.add(activity1));
-		Assert.assertTrue(activities.add(activity2));
-		ast = new ActivitySpanningTree(0, tbs);
-		Assert.assertTrue(ast.addActivities(activities));
-		containsActivity1and2(ast);
-		
-		// Build AST of 1 activity
-		ast = new ActivitySpanningTree(0, tbs);
-		Assert.assertTrue(activities.remove(activity2));
-		Assert.assertTrue(ast.addActivities(activities));
-		
-		containsActivity1(ast);
-		
-		// then add a set of 2 and 3, containing invalid, get only activity 1
-		Assert.assertTrue(activities.remove(activity1));
-		Assert.assertTrue(activities.add(activity2));
-		Assert.assertTrue(activities.add(activity3));
-		Assert.assertFalse(ast.addActivities(activities));
-		containsActivity1(ast);
-		
-	}
-	
-	@Test
-	public void testAddActivity() {
-		ast = new ActivitySpanningTree(0, tbs);
-		
-		// Add activity 1
-		Assert.assertTrue(ast.addActivity(activity1));
+		// Build AST with activity 1
+		ast = new ActivitySpanningTree(0, activity1);
 		containsActivity1(ast);
 		
 		// Add activity 2
-		Assert.assertTrue(ast.addActivity(activity2));
+		ActivitySpanningTree otherAST = new ActivitySpanningTree(1, activity2);
+		ast = ast.joinAST(otherAST, bridge1and2);
 		containsActivity1and2(ast);
 		
 		// Add activity 3
-		Assert.assertFalse(ast.addActivity(activity3));
-		containsActivity1and2(ast);
+		otherAST = new ActivitySpanningTree(2, activity3);
+		ast = ast.joinAST(otherAST, bridge2and3);
+		containsActivity1and2and3(ast);
 		
+		ast.clearBridges();
+		Assert.assertTrue(ast.getBridges().isEmpty());
+		Assert.assertEquals(6, ast.getSumDuration().getMillis());
 	}
 	
 	/* Private helper methods */
 	
 	private void containsActivity1(ActivitySpanningTree ast) {
 		
-		Assert.assertEquals(tbs, ast.getAvailableTBs());
+		Assert.assertEquals(tbs, ast.getAvailableTBs(tbs));
 		Assert.assertEquals(1, ast.getActivities().size());
 		Iterator<Activity> itr = ast.getActivities().iterator();
 		Assert.assertEquals(activity1, itr.next());
-		Assert.assertEquals(1, ast.getSumActivitiesTime().getMillis());
+		Assert.assertEquals(1, ast.getSumDuration().getMillis());
+		Assert.assertEquals(1, ast.getSumActivitiesDuration().getMillis());
+		Assert.assertTrue(ast.getBridges().isEmpty());
 		
 	}
 	
 	private void containsActivity1and2(ActivitySpanningTree ast) {
-		Assert.assertEquals(1, ast.getAvailableTBs().size());
-		Assert.assertEquals(tbs.get(0), ast.getAvailableTBs().get(0));
+		Assert.assertEquals(1, ast.getAvailableTBs(tbs).size());
+		Assert.assertEquals(tbs.get(0), ast.getAvailableTBs(tbs).get(0));
 		Assert.assertEquals(2, ast.getActivities().size());
 		Iterator<Activity> itr = ast.getActivities().iterator();
 		Assert.assertEquals(activity1, itr.next());
 		Assert.assertEquals(activity2, itr.next());
-		Assert.assertEquals(3, ast.getSumActivitiesTime().getMillis());
+		Assert.assertEquals(4, ast.getSumDuration().getMillis());
+		Assert.assertEquals(3, ast.getSumActivitiesDuration().getMillis());
+		Assert.assertEquals(1, ast.getBridges().size());
+		Assert.assertEquals(bridge1and2, ast.getBridges().iterator().next());
+		
+	}
+	
+	private void containsActivity1and2and3(ActivitySpanningTree ast) {
+		Assert.assertEquals(0, ast.getAvailableTBs(tbs).size());
+		Assert.assertEquals(3, ast.getActivities().size());
+		Iterator<Activity> itr = ast.getActivities().iterator();
+		Assert.assertEquals(activity1, itr.next());
+		Assert.assertEquals(activity3, itr.next());
+		Assert.assertEquals(activity2, itr.next());
+		Assert.assertEquals(12, ast.getSumDuration().getMillis());
+		Assert.assertEquals(6, ast.getSumActivitiesDuration().getMillis());
+		Assert.assertEquals(2, ast.getBridges().size());
+		Iterator<Bridge> itr2 = ast.getBridges().iterator();
+		Assert.assertEquals(bridge1and2, itr2.next());
+		Assert.assertEquals(bridge2and3, itr2.next());
 	}
 }

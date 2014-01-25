@@ -3,7 +3,6 @@ package activities;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -20,7 +19,8 @@ import time.TimeBlock;
 import util.DeepCopy;
 
 /**
- * A container for a set of activities.
+ * A spanning tree of a set of activities. It is represented as a set of
+ * activities and a set of bridges (transportations) that connects them.
  * 
  * @author chiao-yutuan
  * 
@@ -29,9 +29,8 @@ import util.DeepCopy;
 public class ActivitySpanningTree implements Serializable {
 	private static final long serialVersionUID = 6797165864508180241L;
 	private int index;
-	private ArrayList<TimeBlock> availableTBs;
 	private Set<Activity> activities;
-	private Duration sumActivitiesTime;
+	private Set<Bridge> bridges;
 	
 	/**
 	 * Construct with an index and a list of available TBs
@@ -42,87 +41,138 @@ public class ActivitySpanningTree implements Serializable {
 	 *            The list of TBs that this AST should be able to pair with
 	 */
 	
-	public ActivitySpanningTree(int index, ArrayList<TimeBlock> tbs) {
+	public ActivitySpanningTree(int index, Activity activity) {
 		this.index = index;
-		this.availableTBs = tbs;
 		activities = new HashSet<Activity>();
-		sumActivitiesTime = new Duration(0);
+		activities.add(activity);
+		bridges = new HashSet<Bridge>();
 		
 	}
 	
 	/**
-	 * Add a set of activities to the AST. This method will check each
-	 * activity's available times and update the availableTBs list accordingly.
-	 * The sum of activities duration will be updated
+	 * Join two ASTs with a bridge. It will make a deep copy of this ast, add
+	 * the other ast's activities and bridges to it, and add the bridge that
+	 * connect them given as a parameter. Neither this or the other AST will be
+	 * modified. This method does not check if the bridge actually connects the
+	 * two ASTs
 	 * 
-	 * @param activities
-	 *            The set of activities to add
-	 * @return whether activities were added successfully. Method will return
-	 *         false with the AST unchanged if adding these activities will
-	 *         result in an empty list of availableTBs
+	 * @param other
+	 *            The other ast to join with
+	 * @param bridge
+	 *            The bridge that connects the two
+	 * @return The AST that results from the join. Null is returned if
+	 *         activities, bridges, or the bridge that connects two ASTs addAll
+	 *         operation failed
 	 */
-	public boolean addActivities(Set<Activity> activities) {
-		ActivitySpanningTree clone = (ActivitySpanningTree) DeepCopy.copy(this);
-		Iterator<Activity> itr = activities.iterator();
-		while (itr.hasNext()) {
-			if (!clone.addActivity(itr.next())) {
-				return false;
-			}
+	public ActivitySpanningTree joinAST(ActivitySpanningTree other,
+			Bridge bridge) {
+		
+		ActivitySpanningTree union = (ActivitySpanningTree) DeepCopy.copy(this);
+		
+		if (union.activities.addAll(other.getActivities())
+				&& (other.getBridges().size() == 0 || union.bridges
+						.addAll(other.getBridges()))
+				&& union.bridges.add(bridge)) {
+			return union;
+		} else {
+			return null;
 		}
-		this.availableTBs = clone.availableTBs;
-		this.activities = clone.activities;
-		this.sumActivitiesTime = clone.sumActivitiesTime;
-		return true;
+		
 	}
 	
 	/**
-	 * Add a single activity to the AST. This method will check this activity's
-	 * available times and update the availableTBs list accordingly. The sum of
-	 * activities duration will be updated accordingly
+	 * Given list of TBs, return a sublist of TBs that all activities in this
+	 * AST can fit in (aka for each activity, there exists some time segment on
+	 * this TB with a duration >= to activity duration and overlaps with
+	 * activity legal times. This doesn't guarantee that these activities won't
+	 * overlap or put transportations into consideration
 	 * 
-	 * @param activity
-	 *            The activity to add.
-	 * @return Whether the activity was added successfully. Method will return
-	 *         false with the AST unchanged if adding it will result in an empty
-	 *         list of availableTBs
+	 * @param tbs
+	 *            The list of tbs to filter from
+	 * @return An arraylist of tbs that work
 	 */
-	public boolean addActivity(Activity activity) {
-		
-		// check for commonTBs
+	public ArrayList<TimeBlock> getAvailableTBs(ArrayList<TimeBlock> tbs) {
 		ArrayList<TimeBlock> commonTBs = new ArrayList<TimeBlock>();
-		for (TimeBlock tb : availableTBs) {
+		
+		// Iterate through all TB candidates
+		for (TimeBlock tb : tbs) {
+			
 			TreeMap<DateTime, Schedulable> map = new TreeMap<DateTime, Schedulable>();
 			Interval interval = tb.getInterval();
 			map.put(new DateTime(interval.getStart()),
 					new LegalTime(interval.toDuration()));
-			Activity tester = new Activity("tester", activity.getDuration(),
-					activity.legalTimeline.intersect(new LegalTimeline(map)));
 			
-			if (tester.forwardChecking()) {
+			boolean allActivitiesFit = true;
+			
+			// check each activity in this AST if fit
+			for (Activity activity : activities) {
+				Activity tester = new Activity("tester",
+						activity.getDuration(),
+						activity.legalTimeline
+								.intersect(new LegalTimeline(map)));
+				
+				if (!tester.forwardChecking()) {
+					allActivitiesFit = false;
+					break;
+				}
+			}
+			
+			// All activities in this AST fit in this TB, add to collection
+			if (allActivitiesFit) {
 				commonTBs.add(tb);
 			}
-		}
-		if (commonTBs.isEmpty()) {
-			return false;
+			
 		}
 		
-		activities.add(activity);
-		availableTBs = commonTBs;
-		sumActivitiesTime = sumActivitiesTime.plus(activity.getDuration());
+		return commonTBs;
+	}
+	
+	/**
+	 * Remove all bridges in this AST. Used after clustering to release
+	 * unnecessary memory
+	 */
+	public void clearBridges() {
+		bridges.clear();
+	}
+	
+	/**
+	 * Calculate the sum of all activities, not putting bridges into
+	 * consideration.
+	 * 
+	 * @return The sum as duration
+	 */
+	public Duration getSumActivitiesDuration() {
+		Duration sum = new Duration(0);
+		for (Activity activity : activities) {
+			sum = sum.plus(activity.getDuration());
+		}
 		
-		return true;
+		return sum;
+	}
+	
+	/**
+	 * Calculate the sum of all activities and bridges.
+	 * 
+	 * @return The sum as duration
+	 */
+	public Duration getSumDuration() {
+		Duration sum = new Duration(0);
+		for (Activity activity : activities) {
+			sum = sum.plus(activity.getDuration());
+		}
+		for (Bridge bridge : bridges) {
+			sum = sum.plus(bridge.getEdge().getDuration());
+		}
+		
+		return sum;
 	}
 	
 	public Set<Activity> getActivities() {
 		return activities;
 	}
 	
-	public Duration getSumActivitiesTime() {
-		return sumActivitiesTime;
-	}
-	
-	public ArrayList<TimeBlock> getAvailableTBs() {
-		return availableTBs;
+	public Set<Bridge> getBridges() {
+		return bridges;
 	}
 	
 	public int getIndex() {
@@ -133,9 +183,8 @@ public class ActivitySpanningTree implements Serializable {
 	public boolean equals(Object obj) {
 		if (obj instanceof ActivitySpanningTree) {
 			ActivitySpanningTree other = (ActivitySpanningTree) obj;
-			if (index == other.index && availableTBs.equals(other.availableTBs)
-					&& activities.equals(other.activities)
-					&& sumActivitiesTime.equals(other.sumActivitiesTime)) {
+			if (index == other.index && activities.equals(other.activities)
+					&& bridges.equals(bridges)) {
 				return true;
 			}
 			
@@ -145,8 +194,8 @@ public class ActivitySpanningTree implements Serializable {
 	
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder().append(index).append(availableTBs)
-				.append(activities).append(sumActivitiesTime).toHashCode();
+		return new HashCodeBuilder().append(index).append(activities)
+				.append(bridges).toHashCode();
 	}
 	
 }
