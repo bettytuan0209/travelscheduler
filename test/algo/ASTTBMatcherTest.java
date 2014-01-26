@@ -44,7 +44,7 @@ public class ASTTBMatcherTest {
 		Set<ActivitySpanningTree> asts = MatchingStateTest.asts;
 		ArrayList<TimeBlock> schedule = ASTTBMatcher.matching(
 				new SimpleWeightedGraph<Location, Transportation>(
-						Transportation.class), asts);
+						Transportation.class), asts, MatchingStateTest.tbs);
 		Debugger.printSchedulables(schedule.get(0));
 		Debugger.printSchedulables(schedule.get(1));
 		Debugger.printSchedulables(schedule.get(2));
@@ -67,21 +67,18 @@ public class ASTTBMatcherTest {
 		Assert.assertTrue(availableTBs.add(tb2));
 		
 		// configure AST1
-		ActivitySpanningTree ast1 = new ActivitySpanningTree(1, availableTBs);
-		
 		LegalTimeline legal1 = new LegalTimeline(new Interval(1, 40));
 		Assert.assertTrue(legal1.schedule(1, 40));
 		Activity skiing = new Activity("skiing", new Duration(3), new Location(
 				5, 5), legal1);
-		Assert.assertTrue(ast1.addActivity(skiing));
+		ActivitySpanningTree ast1 = new ActivitySpanningTree(1, skiing);
 		
 		// configure AST2
-		ActivitySpanningTree ast2 = new ActivitySpanningTree(2, availableTBs);
 		legal1 = new LegalTimeline(new Interval(9, 20));
 		Assert.assertTrue(legal1.schedule(9, 20));
 		Activity tv = new Activity("watch TV", new Duration(1), new Location(0,
 				0), legal1);
-		Assert.assertTrue(ast2.addActivity(tv));
+		ActivitySpanningTree ast2 = new ActivitySpanningTree(2, tv);
 		
 		// configure graph
 		SimpleWeightedGraph<Location, Transportation> graph = new SimpleWeightedGraph<Location, Transportation>(
@@ -96,20 +93,21 @@ public class ASTTBMatcherTest {
 		Set<ActivitySpanningTree> asts = new HashSet<ActivitySpanningTree>();
 		Assert.assertTrue(asts.add(ast1));
 		Assert.assertTrue(asts.add(ast2));
-		ArrayList<TimeBlock> schedule = ASTTBMatcher.matching(graph, asts);
+		ArrayList<TimeBlock> schedule = ASTTBMatcher.matching(graph, asts,
+				availableTBs);
 		Assert.assertNotNull(schedule);
 		
-		// Check TB1
-		Assert.assertEquals(1, schedule.get(0).getIndex());
-		Assert.assertEquals(tv.title,
-				((Activity) (schedule.get(0).getScheduledActivities()
-						.getSchedule().get(new DateTime(9)))).title);
-		
 		// Check TB2
-		Assert.assertEquals(2, schedule.get(1).getIndex());
+		Assert.assertEquals(2, schedule.get(0).getIndex());
 		Assert.assertEquals(skiing.title,
-				((Activity) (schedule.get(1).getScheduledActivities()
+				((Activity) (schedule.get(0).getScheduledActivities()
 						.getSchedule().get(new DateTime(20)))).title);
+		
+		// Check TB1
+		Assert.assertEquals(1, schedule.get(1).getIndex());
+		Assert.assertEquals(tv.title,
+				((Activity) (schedule.get(1).getScheduledActivities()
+						.getSchedule().get(new DateTime(9)))).title);
 		
 	}
 	

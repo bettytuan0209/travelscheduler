@@ -61,6 +61,7 @@ public class SchedulingStateTest {
 		// 2. start - museum
 		// 3. start - concert
 		successors = parent.successors();
+		
 		Assert.assertEquals(3, successors.size());
 		for (int i = 0; i < successors.size(); i++) {
 			SchedulingState child = (SchedulingState) successors.get(i);

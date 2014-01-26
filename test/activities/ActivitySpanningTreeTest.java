@@ -121,7 +121,7 @@ public class ActivitySpanningTreeTest {
 		Assert.assertEquals(6, ast.getSumActivitiesDuration().getMillis());
 		Assert.assertEquals(2, ast.getBridges().size());
 		Iterator<Bridge> itr2 = ast.getBridges().iterator();
-		Assert.assertEquals(bridge1and2, itr2.next());
 		Assert.assertEquals(bridge2and3, itr2.next());
+		Assert.assertEquals(bridge1and2, itr2.next());
 	}
 }

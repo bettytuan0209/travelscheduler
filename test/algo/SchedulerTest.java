@@ -2,18 +2,23 @@ package algo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.jgrapht.graph.SimpleWeightedGraph;
+import org.joda.time.Duration;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import schedulable.Activity;
 import schedulable.Transportation;
 import search.TreeSearchTest;
 import state.SchedulingStateTest;
 import time.TimeBlock;
 import util.Debugger;
 import activities.ActivitySpanningTree;
+import activities.Bridge;
 import activities.Location;
 
 public class SchedulerTest {
@@ -37,25 +42,22 @@ public class SchedulerTest {
 		// The first TB - AST pair
 		ArrayList<TimeBlock> availableTBs = new ArrayList<TimeBlock>();
 		availableTBs.add(SchedulingStateTest.tb1);
-		ActivitySpanningTree ast1 = new ActivitySpanningTree(1, availableTBs);
-		Assert.assertTrue(ast1.addActivities(SchedulingStateTest.state1
-				.getActivities()));
+		ActivitySpanningTree ast1 = astWithActivities(1,
+				SchedulingStateTest.state1.getActivities());
 		pairs.put(SchedulingStateTest.tb1, ast1);
 		
 		// The second TB - AST pair
 		availableTBs = new ArrayList<TimeBlock>();
 		availableTBs.add(SchedulingStateTest.tb2);
-		ActivitySpanningTree ast2 = new ActivitySpanningTree(2, availableTBs);
-		Assert.assertTrue(ast2.addActivities(SchedulingStateTest.state2
-				.getActivities()));
+		ActivitySpanningTree ast2 = astWithActivities(2,
+				SchedulingStateTest.state2.getActivities());
 		pairs.put(SchedulingStateTest.tb2, ast2);
 		
 		// The third TB - AST pair
 		availableTBs = new ArrayList<TimeBlock>();
 		availableTBs.add(SchedulingStateTest.tb3);
-		ActivitySpanningTree ast3 = new ActivitySpanningTree(3, availableTBs);
-		Assert.assertTrue(ast3.addActivities(SchedulingStateTest.state3
-				.getActivities()));
+		ActivitySpanningTree ast3 = astWithActivities(3,
+				SchedulingStateTest.state3.getActivities());
 		pairs.put(SchedulingStateTest.tb3, ast3);
 		
 	}
@@ -81,5 +83,27 @@ public class SchedulerTest {
 			}
 		}
 		
+	}
+	
+	private static ActivitySpanningTree astWithActivities(int index,
+			Set<Activity> activities) {
+		if (!activities.isEmpty()) {
+			Iterator<Activity> itr = activities.iterator();
+			ActivitySpanningTree ast = new ActivitySpanningTree(index,
+					itr.next());
+			
+			while (itr.hasNext()) {
+				Activity activity = itr.next();
+				Bridge bridge = new Bridge(new Transportation(new Duration(0)),
+						ast.getActivities().iterator().next(), activity);
+				
+				ActivitySpanningTree tmp = new ActivitySpanningTree(0, activity);
+				ast = ast.joinAST(tmp, bridge);
+			}
+			
+			return ast;
+		}
+		
+		return null;
 	}
 }

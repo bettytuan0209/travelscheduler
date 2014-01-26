@@ -13,12 +13,17 @@ import activities.ActivitySpanningTree;
 public class MatchingState implements SearchState, Serializable {
 	
 	private static final long serialVersionUID = 4188017693668337015L;
-	private Set<ActivitySpanningTree> asts;
+	protected Set<ActivitySpanningTree> asts;
 	private HashMap<TimeBlock, ActivitySpanningTree> matches;
 	
-	public MatchingState(Set<ActivitySpanningTree> asts) {
+	public MatchingState(Set<ActivitySpanningTree> asts,
+			ArrayList<TimeBlock> tbs) {
 		this.asts = asts;
 		matches = new HashMap<TimeBlock, ActivitySpanningTree>();
+		
+		for (TimeBlock tb : tbs) {
+			matches.put(tb, null);
+		}
 	}
 	
 	@Override
@@ -32,10 +37,10 @@ public class MatchingState implements SearchState, Serializable {
 			asts.remove(ast);
 			
 			// for each tb that this ast can match with
-			for (TimeBlock tb : ast.getAvailableTBs()) {
+			for (TimeBlock tb : ast.getAvailableTBs(matches.keySet())) {
 				
 				// if this tb hasn't been matched with another ast
-				if (!matches.containsKey(tb)) {
+				if (matches.get(tb) == null) {
 					
 					// create a new state with that match and insert to
 					// successors

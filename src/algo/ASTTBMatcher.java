@@ -35,16 +35,17 @@ public class ASTTBMatcher {
 	 */
 	public static ArrayList<TimeBlock> matching(
 			SimpleWeightedGraph<Location, Transportation> graph,
-			Set<ActivitySpanningTree> asts) {
+			Set<ActivitySpanningTree> asts, ArrayList<TimeBlock> tbs) {
 		
 		// construct the initial state
-		MatchingState root = new MatchingState(asts);
+		MatchingState root = new MatchingState(asts, tbs);
 		
 		TreeSearch searcher = new TreeSearch(new DFS(), root);
 		
 		// for each goal state, pass to next module and wait for response
 		MatchingState goal;
 		while ((goal = (MatchingState) searcher.nextGoal()) != null) {
+			
 			ArrayList<TimeBlock> schedule = Scheduler.autoScheduleAll(graph,
 					goal.getMatches());
 			if (schedule != null) {
