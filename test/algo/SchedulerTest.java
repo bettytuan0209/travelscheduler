@@ -85,6 +85,17 @@ public class SchedulerTest {
 		
 	}
 	
+	@Test
+	public void testNotMatched() {
+		HashMap<TimeBlock, ActivitySpanningTree> notMatched = new HashMap<TimeBlock, ActivitySpanningTree>();
+		Assert.assertNull(notMatched.put(SchedulingStateTest.tb1, null));
+		ArrayList<TimeBlock> tbs = Scheduler.autoScheduleAll(graph, notMatched);
+		Assert.assertEquals(1, tbs.size());
+		Assert.assertEquals(SchedulingStateTest.tb1, tbs.get(0));
+		Assert.assertEquals(0, tbs.get(0).getScheduledActivities()
+				.getSchedule().size());
+	}
+	
 	private static ActivitySpanningTree astWithActivities(int index,
 			Set<Activity> activities) {
 		if (!activities.isEmpty()) {

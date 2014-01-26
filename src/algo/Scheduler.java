@@ -68,6 +68,11 @@ public class Scheduler {
 			SimpleWeightedGraph<Location, Transportation> wholeGraph,
 			TimeBlock timeblock, ActivitySpanningTree ast) {
 		
+		// If the TB isn't matched with any AST, return it as is
+		if (ast == null) {
+			return timeblock;
+		}
+		
 		// construct the initial state
 		SchedulingState root = new SchedulingState(timeblock, wholeGraph,
 				ast.getActivities());
