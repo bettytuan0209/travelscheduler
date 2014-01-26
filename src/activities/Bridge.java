@@ -53,7 +53,8 @@ public class Bridge implements Comparable<Bridge>, Serializable {
 	public boolean equals(Object obj) {
 		if (obj instanceof Bridge) {
 			Bridge other = (Bridge) obj;
-			if (edge.equals(other.edge) && activity1.equals(other.activity1)
+			if (edge.getDuration().equals(other.edge.getDuration())
+					&& activity1.equals(other.activity1)
 					&& activity2.equals(other.activity2)) {
 				return true;
 			}
@@ -64,8 +65,8 @@ public class Bridge implements Comparable<Bridge>, Serializable {
 	
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder().append(edge).append(activity1)
-				.append(activity2).toHashCode();
+		return new HashCodeBuilder().append(edge.getDuration())
+				.append(activity1).append(activity2).toHashCode();
 	}
 	
 }
