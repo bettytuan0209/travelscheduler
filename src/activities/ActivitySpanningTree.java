@@ -2,6 +2,7 @@ package activities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeMap;
@@ -91,7 +92,7 @@ public class ActivitySpanningTree implements Serializable {
 	 *            The list of tbs to filter from
 	 * @return An arraylist of tbs that work
 	 */
-	public ArrayList<TimeBlock> getAvailableTBs(ArrayList<TimeBlock> tbs) {
+	public ArrayList<TimeBlock> getAvailableTBs(Collection<TimeBlock> tbs) {
 		ArrayList<TimeBlock> commonTBs = new ArrayList<TimeBlock>();
 		
 		// Iterate through all TB candidates
