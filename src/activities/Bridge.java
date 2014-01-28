@@ -13,11 +13,13 @@ public class Bridge implements Comparable<Bridge>, Serializable {
 	private Transportation edge;
 	private Activity activity1;
 	private Activity activity2;
+	public boolean used;
 	
 	public Bridge(Transportation edge, Activity activity1, Activity activity2) {
 		this.edge = edge;
 		this.activity1 = activity1;
 		this.activity2 = activity2;
+		this.used = false;
 	}
 	
 	public long getDurationMillis() {
@@ -67,6 +69,12 @@ public class Bridge implements Comparable<Bridge>, Serializable {
 	public int hashCode() {
 		return new HashCodeBuilder().append(edge.getDuration())
 				.append(activity1).append(activity2).toHashCode();
+	}
+	
+	@Override
+	public String toString() {
+		return activity1.title + "-" + activity2.title + " "
+				+ getDurationMillis();
 	}
 	
 }
