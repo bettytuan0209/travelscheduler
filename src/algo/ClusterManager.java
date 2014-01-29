@@ -181,28 +181,12 @@ public class ClusterManager {
 							clusters.add(setB);
 							bridge.used = false;
 							
-							System.out.println("Current clustering: ");
-							for (ActivitySpanningTree ast : clusters) {
-								System.out.println(ast.toString());
-							}
-							System.out.println();
-							
-							System.out.println("Blacklist: ");
-							for (Set<ActivitySpanningTree> blackcluster : blacklist) {
-								for (ActivitySpanningTree ast : blackcluster) {
-									System.out.print(ast.toString() + " // ");
-								}
-								System.out.println();
-							}
-							System.out.println();
-							
 						}
 					}
 				}
 			}
 			
 		}
-		System.out.println("end of list");
 		return null;
 	}
 	

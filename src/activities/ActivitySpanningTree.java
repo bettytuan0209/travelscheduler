@@ -75,11 +75,6 @@ public class ActivitySpanningTree implements Serializable {
 						.addAll(other.getBridges()))
 				&& union.bridges.add(bridge)) {
 			
-			for (Activity activity : union.getActivities()) {
-				System.out.print(activity.title);
-			}
-			System.out.println();
-			
 			return union;
 		} else {
 			return null;

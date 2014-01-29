@@ -34,6 +34,13 @@ public class ClusterManagerTest {
 	
 	@BeforeClass
 	public static void init() {
+		System.out
+				.println("*********************************************************");
+		System.out
+				.println("****************** ClusterManager Test ******************");
+		System.out
+				.println("*********************************************************");
+		System.out.println();
 		initHelper();
 	}
 	
