@@ -74,11 +74,26 @@ public class ActivitySpanningTree implements Serializable {
 				&& (other.getBridges().size() == 0 || union.bridges
 						.addAll(other.getBridges()))
 				&& union.bridges.add(bridge)) {
+			
+			for (Activity activity : union.getActivities()) {
+				System.out.print(activity.title);
+			}
+			System.out.println();
+			
 			return union;
 		} else {
 			return null;
 		}
 		
+	}
+	
+	public ArrayList<TimeBlock> getAvailableTBs(Collection<TimeBlock> tbs) {
+		return getAvailableTBs(tbs, false, false);
+	}
+	
+	public ArrayList<TimeBlock> getAvailableTBs(Collection<TimeBlock> tbs,
+			boolean checkActivitiesTime) {
+		return getAvailableTBs(tbs, checkActivitiesTime, false);
 	}
 	
 	/**
@@ -92,7 +107,8 @@ public class ActivitySpanningTree implements Serializable {
 	 *            The list of tbs to filter from
 	 * @return An arraylist of tbs that work
 	 */
-	public ArrayList<TimeBlock> getAvailableTBs(Collection<TimeBlock> tbs) {
+	public ArrayList<TimeBlock> getAvailableTBs(Collection<TimeBlock> tbs,
+			boolean checkActivitiesTime, boolean checkTotalTime) {
 		ArrayList<TimeBlock> commonTBs = new ArrayList<TimeBlock>();
 		
 		// Iterate through all TB candidates
@@ -119,7 +135,11 @@ public class ActivitySpanningTree implements Serializable {
 			}
 			
 			// All activities in this AST fit in this TB, add to collection
-			if (allActivitiesFit) {
+			if (allActivitiesFit
+					&& (!checkActivitiesTime || !tb.getInterval().toDuration()
+							.isShorterThan(getSumActivitiesDuration()))
+					&& (!checkTotalTime || !tb.getInterval().toDuration()
+							.isShorterThan(getSumDuration()))) {
 				commonTBs.add(tb);
 			}
 			
@@ -199,4 +219,21 @@ public class ActivitySpanningTree implements Serializable {
 				.append(bridges).toHashCode();
 	}
 	
+	@Override
+	public String toString() {
+		String result = "Index: " + index + ". ";
+		
+		result += "Activities: ";
+		for (Activity activity : activities) {
+			result += activity.title + " ";
+		}
+		
+		result += ". Bridges: ";
+		for (Bridge bridge : bridges) {
+			result += bridge.toString() + " ";
+		}
+		result += ". ";
+		
+		return result;
+	}
 }
