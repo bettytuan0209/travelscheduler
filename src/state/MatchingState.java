@@ -37,7 +37,8 @@ public class MatchingState implements SearchState, Serializable {
 			asts.remove(ast);
 			
 			// for each tb that this ast can match with
-			for (TimeBlock tb : ast.getAvailableTBs(matches.keySet())) {
+			for (TimeBlock tb : ast.getAvailableTBs(matches.keySet(), true,
+					true)) {
 				
 				// if this tb hasn't been matched with another ast
 				if (matches.get(tb) == null) {
