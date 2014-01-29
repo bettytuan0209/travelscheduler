@@ -25,7 +25,6 @@ public class ClusterManager {
 		Set<ActivitySpanningTree> clusters = new HashSet<ActivitySpanningTree>();
 		ArrayList<Set<ActivitySpanningTree>> blacklist = new ArrayList<Set<ActivitySpanningTree>>();
 		ArrayList<Bridge> bridges = new ArrayList<Bridge>();
-		System.out.println("\nstart clustering");
 		
 		// create an AST for each activity
 		int astIndex = 0;
@@ -111,19 +110,6 @@ public class ClusterManager {
 			ArrayList<Bridge> searchRangeBridges, ArrayList<TimeBlock> tbs,
 			ArrayList<Set<ActivitySpanningTree>> blacklist) {
 		
-		System.out.println("Current clustering: ");
-		for (ActivitySpanningTree ast : clusters) {
-			System.out.println(ast.toString());
-		}
-		System.out.println();
-		
-		System.out.println("Blacklist: ");
-		for (Set<ActivitySpanningTree> blackcluster : blacklist) {
-			for (ActivitySpanningTree ast : blackcluster) {
-				System.out.println(ast.toString());
-			}
-		}
-		System.out.println();
 		// iterate through this given range, try to find a bridge to use
 		for (Bridge bridge : searchRangeBridges) {
 			ActivitySpanningTree setA = findAST(clusters, bridge.getActivity1());
@@ -134,177 +120,91 @@ public class ClusterManager {
 				ActivitySpanningTree union = setA.joinAST(setB, bridge);
 				
 				if (union.getAvailableTBs(tbs, false, true).size() == 0) {
-					System.out.println("availableTB not enough");
 					
 					Set<ActivitySpanningTree> invalid = new HashSet<ActivitySpanningTree>();
 					invalid.add(union);
 					
 					if (!inBlacklist(invalid, blacklist)) {
-						System.out.print("add to blacklist: ");
-						for (ActivitySpanningTree ast : clusters) {
-							for (Activity activity : ast.getActivities()) {
-								System.out.print(activity.title);
-							}
-							System.out.print("  ");
-						}
-						System.out.println();
+						
 						blacklist.add(invalid);
 					}
 					
-				} else if (!inBlacklist(clusters, blacklist)) {
-					
+				} else {
 					// actually join the two asts and update the bridges
 					clusters.remove(setA);
 					clusters.remove(setB);
 					clusters.add(union);
 					bridge.used = true;
-					ArrayList<TimeBlock> result;
-					if (goalCheck(clusters, tbs)
-							&& (result = ASTTBMatcher.matching(graph, clusters,
-									(ArrayList<TimeBlock>) DeepCopy.copy(tbs))) != null) {
-						return result;
-					} else if ((result = clusterInRange(
-							graph,
-							clusters,
-							new ArrayList<Bridge>(searchRangeBridges.subList(
-									searchRangeBridges.indexOf(bridge) + 1,
-									searchRangeBridges.size())), tbs, blacklist)) != null) {
-						return result;
-						
-					} else {
-						System.out.print("add to blacklist: ");
-						for (ActivitySpanningTree ast : clusters) {
-							for (Activity activity : ast.getActivities()) {
-								System.out.print(activity.title);
-							}
-							System.out.print("  ");
-						}
-						System.out.println();
-						
-						// note that this config doesn't work
-						blacklist.add(clusters);
-						
-						// restore previous state (aka undo using this bridge)
+					
+					if (inBlacklist(clusters, blacklist)) {
+						// restore previous state (aka undo using this
+						// bridge)
 						clusters.remove(union);
 						clusters.add(setA);
 						clusters.add(setB);
 						bridge.used = false;
+					} else {
 						
-						System.out.println("Current clustering: ");
-						for (ActivitySpanningTree ast : clusters) {
-							System.out.println(ast.toString());
-						}
-						System.out.println();
-						
-						System.out.println("Blacklist: ");
-						for (Set<ActivitySpanningTree> blackcluster : blacklist) {
-							for (ActivitySpanningTree ast : blackcluster) {
+						ArrayList<TimeBlock> result;
+						if (goalCheck(clusters, tbs)
+								&& (result = ASTTBMatcher.matching(graph,
+										(Set<ActivitySpanningTree>) DeepCopy
+												.copy(clusters),
+										(ArrayList<TimeBlock>) DeepCopy
+												.copy(tbs))) != null) {
+							return result;
+						} else if ((result = clusterInRange(
+								graph,
+								clusters,
+								new ArrayList<Bridge>(searchRangeBridges
+										.subList(searchRangeBridges
+												.indexOf(bridge) + 1,
+												searchRangeBridges.size())),
+								tbs, blacklist)) != null) {
+							
+							return result;
+							
+						} else {
+							
+							if (!inBlacklist(clusters, blacklist)) {
+								
+								// note that this config doesn't work
+								blacklist
+										.add((Set<ActivitySpanningTree>) DeepCopy
+												.copy(clusters));
+							}
+							// restore previous state (aka undo using this
+							// bridge)
+							
+							clusters.remove(union);
+							clusters.add(setA);
+							clusters.add(setB);
+							bridge.used = false;
+							
+							System.out.println("Current clustering: ");
+							for (ActivitySpanningTree ast : clusters) {
 								System.out.println(ast.toString());
 							}
+							System.out.println();
+							
+							System.out.println("Blacklist: ");
+							for (Set<ActivitySpanningTree> blackcluster : blacklist) {
+								for (ActivitySpanningTree ast : blackcluster) {
+									System.out.print(ast.toString() + " // ");
+								}
+								System.out.println();
+							}
+							System.out.println();
+							
 						}
-						System.out.println();
-						
 					}
 				}
-				
 			}
 			
 		}
 		System.out.println("end of list");
 		return null;
 	}
-	
-	//
-	// protected static int findHeaviestBridge(ArrayList<Bridge> bridges,
-	// Set<ActivitySpanningTree> clusters) {
-	//
-	// Bridge heaviest = null;
-	// // go through each ast
-	// for (ActivitySpanningTree ast : clusters) {
-	// TreeSet<Bridge> currentBridges = new TreeSet<Bridge>(
-	// ast.getBridges());
-	//
-	// Bridge thisHeaviest = currentBridges.last();
-	//
-	// heaviest = heaviest == null
-	// || thisHeaviest.getDurationMillis() > heaviest
-	// .getDurationMillis() ? thisHeaviest : heaviest;
-	//
-	// }
-	//
-	// if (heaviest == null) {
-	// return -1;
-	// }
-	//
-	// for (int i = 0; i < bridges.size(); i++) {
-	// if (heaviest.equals(bridges.get(i))) {
-	// return i;
-	// }
-	// }
-	//
-	// return -1;
-	// }
-	
-	// protected static int popHeaviestBridge(ArrayList<Bridge> bridges,
-	// Set<ActivitySpanningTree> clusters) {
-	//
-	// Bridge heaviest = null;
-	// ActivitySpanningTree astToBreak = null;
-	// // go through each ast
-	// for (ActivitySpanningTree ast : clusters) {
-	// TreeSet<Bridge> currentBridges = new TreeSet<Bridge>(
-	// ast.getBridges());
-	//
-	// Bridge thisHeaviest = currentBridges.last();
-	// if (heaviest == null
-	// || thisHeaviest.getDurationMillis() > heaviest
-	// .getDurationMillis()) {
-	// heaviest = thisHeaviest;
-	// astToBreak = ast;
-	// }
-	//
-	// }
-	//
-	// if (heaviest == null) {
-	// return -1;
-	// }
-	//
-	// // tear down the ast and re-join them
-	// Set<ActivitySpanningTree> newSubCluster = new
-	// HashSet<ActivitySpanningTree>();
-	// for (Activity activity : astToBreak.getActivities()) {
-	// ActivitySpanningTree ast = new ActivitySpanningTree(0, activity);
-	// newSubCluster.add(ast);
-	// }
-	//
-	// // use each bridge but the popped one to rejoin the asts
-	// for (Bridge bridge : astToBreak.getBridges()) {
-	// if (!bridge.equals(heaviest)) {
-	// ActivitySpanningTree setA = findAST(newSubCluster,
-	// bridge.getActivity1());
-	// ActivitySpanningTree setB = findAST(newSubCluster,
-	// bridge.getActivity2());
-	//
-	// if (!setA.equals(setB)) {
-	// ActivitySpanningTree union = setA.joinAST(setB, bridge);
-	//
-	// newSubCluster.remove(setA);
-	// newSubCluster.remove(setB);
-	// newSubCluster.add(union);
-	// }
-	// }
-	// }
-	//
-	// clusters.remove(astToBreak);
-	// clusters.addAll(newSubCluster);
-	//
-	// for (int i = 0; i < bridges.size(); i++) {
-	// if (heaviest.equals(bridges.get(i))) {
-	// return i;
-	// }
-	// }
-	// return -1;
-	// }
 	
 	protected static ActivitySpanningTree findAST(
 			Set<ActivitySpanningTree> clusters, Activity activity) {
@@ -324,6 +224,7 @@ public class ClusterManager {
 		
 		// check each cluster
 		for (Set<ActivitySpanningTree> blackSet : blacklist) {
+			boolean isSubSet = true;
 			
 			// check if blackSet is a subset of clusters
 			for (ActivitySpanningTree blackAST : blackSet) {
@@ -338,11 +239,14 @@ public class ClusterManager {
 					if (clusterAST == null
 							|| !blackAST.getActivities().equals(
 									clusterAST.getActivities())) {
+						isSubSet = false;
 						break;
 					}
 				}
-				return true;
 				
+			}
+			if (isSubSet) {
+				return true;
 			}
 		}
 		

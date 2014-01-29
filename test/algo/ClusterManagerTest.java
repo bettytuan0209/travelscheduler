@@ -17,6 +17,7 @@ import schedulable.LegalTime;
 import schedulable.Transportation;
 import time.LegalTimeline;
 import time.TimeBlock;
+import util.Debugger;
 import activities.ActivitySpanningTree;
 import activities.Bridge;
 import activities.Location;
@@ -38,11 +39,15 @@ public class ClusterManagerTest {
 	
 	@Test
 	public void testClustering() {
-		Assert.assertNotNull(ClusterManager.clustering(graph, allActivities,
-				tbs));
+		ArrayList<TimeBlock> results = ClusterManager.clustering(graph,
+				allActivities, tbs);
+		Assert.assertNotNull(results);
+		for (TimeBlock result : results) {
+			Debugger.printSchedulables(result);
+		}
 	}
 	
-	// @Test
+	@Test
 	public void testFindAST() {
 		clusters.clear();
 		clusters.add(abc);
@@ -93,9 +98,9 @@ public class ClusterManagerTest {
 	}
 	
 	private static void initHelper() {
-		LegalTimeline legalTimeline = new LegalTimeline(new Interval(0, 35));
+		LegalTimeline legalTimeline = new LegalTimeline(new Interval(0, 50));
 		legalTimeline
-				.schedule(new DateTime(0), new LegalTime(new Duration(35)));
+				.schedule(new DateTime(0), new LegalTime(new Duration(50)));
 		
 		// build activities
 		activityA = new Activity("A", new Duration(2), new Location(1, 1),
@@ -139,37 +144,13 @@ public class ClusterManagerTest {
 		graph.addEdge(activityB.location, activityD.location,
 				new Transportation(new Duration(6)));
 		graph.addEdge(activityB.location, activityE.location,
-				new Transportation(new Duration(9)));
+				new Transportation(new Duration(8)));
 		graph.addEdge(activityC.location, activityD.location,
 				new Transportation(new Duration(8)));
 		graph.addEdge(activityC.location, activityE.location,
 				new Transportation(new Duration(7)));
 		graph.addEdge(activityD.location, activityE.location,
 				new Transportation(new Duration(20)));
-		
-		// build the bridges
-		// Map<Bridge, Boolean> bridges = new TreeMap<Bridge, Boolean>(
-		// new Comparator<Bridge>() {
-		// public int compare(Bridge a, Bridge b) {
-		// long result = a.getDurationMillis()
-		// - b.getDurationMillis();
-		// if (result < 0) {
-		// return -1;
-		// } else if (result > 0) {
-		// return 1;
-		// } else {
-		// return 0;
-		// }
-		// }
-		// });
-		// for (Activity activity1 : allActivities) {
-		// for (Activity activity2 : allActivities) {
-		// if (!activity1.equals(activity2)) {
-		// bridges.put(ClusterManager.makeBridge(graph, activity1,
-		// activity2), new Boolean(false));
-		// }
-		// }
-		// }
 		
 		// build AST with ABC
 		abc = new ActivitySpanningTree(0, activityA);
@@ -193,9 +174,10 @@ public class ClusterManagerTest {
 		clusters.add(ast);
 		
 		// tbs
-		Location start = new Location(1, 1);
-		TimeBlock tb1 = new TimeBlock(0, new Interval(0, 16), start, start);
-		TimeBlock tb2 = new TimeBlock(0, new Interval(18, 30), start, start);
+		Location start1 = new Location(3, 3);
+		Location start2 = new Location(1, 1);
+		TimeBlock tb1 = new TimeBlock(0, new Interval(1, 25), start1, start1);
+		TimeBlock tb2 = new TimeBlock(1, new Interval(31, 47), start2, start2);
 		tbs.add(tb1);
 		tbs.add(tb2);
 	}
