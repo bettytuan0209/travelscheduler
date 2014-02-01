@@ -49,8 +49,22 @@ public class ClusterManagerTest {
 		ArrayList<TimeBlock> results = ClusterManager.clustering(graph,
 				allActivities, tbs);
 		Assert.assertNotNull(results);
+		Assert.assertEquals(2, results.size());
 		for (TimeBlock result : results) {
-			Debugger.printSchedulables(result);
+			switch (result.getIndex()) {
+			case 0:
+				Assert.assertEquals(7, result.getScheduledActivities()
+						.getNumScheduled());
+				Debugger.printSchedulables(result);
+				
+				break;
+			case 1:
+				Assert.assertEquals(5, result.getScheduledActivities()
+						.getNumScheduled());
+				Debugger.printSchedulables(result);
+				break;
+			
+			}
 		}
 	}
 	

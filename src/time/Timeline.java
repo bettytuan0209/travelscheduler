@@ -378,7 +378,7 @@ public class Timeline implements Serializable {
 	}
 	
 	/**
-	 * Get number of scheduled activities on the timeline
+	 * Get number of scheduled schedulables on the timeline
 	 * 
 	 * @return number of scheduled activities
 	 */

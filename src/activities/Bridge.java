@@ -7,7 +7,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import schedulable.Activity;
 import schedulable.Transportation;
 
-public class Bridge implements Comparable<Bridge>, Serializable {
+public class Bridge implements Serializable {
 	
 	private static final long serialVersionUID = 7317728904166827226L;
 	private Transportation edge;
@@ -24,19 +24,6 @@ public class Bridge implements Comparable<Bridge>, Serializable {
 	
 	public long getDurationMillis() {
 		return edge.getDuration().getMillis();
-	}
-	
-	@Override
-	public int compareTo(Bridge other) {
-		long result = this.edge.getDuration().getMillis()
-				- other.edge.getDuration().getMillis();
-		if (result < 0) {
-			return -1;
-		} else if (result > 0) {
-			return 1;
-		} else {
-			return 0;
-		}
 	}
 	
 	public Transportation getEdge() {
