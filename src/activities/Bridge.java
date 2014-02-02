@@ -7,6 +7,14 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import schedulable.Activity;
 import schedulable.Transportation;
 
+/**
+ * This class is used by the cluster manager as a "richer" version of
+ * transportation
+ * 
+ * @author chiao-yutuan
+ * 
+ */
+
 public class Bridge implements Serializable {
 	
 	private static final long serialVersionUID = 7317728904166827226L;
@@ -15,6 +23,17 @@ public class Bridge implements Serializable {
 	private Activity activity2;
 	public boolean used;
 	
+	/**
+	 * Default constructor with the transportation and two activities on each
+	 * side. The bridge is automatically marked not used
+	 * 
+	 * @param edge
+	 *            The transportation schedulable
+	 * @param activity1
+	 *            An activity
+	 * @param activity2
+	 *            The other activity
+	 */
 	public Bridge(Transportation edge, Activity activity1, Activity activity2) {
 		this.edge = edge;
 		this.activity1 = activity1;
@@ -22,6 +41,12 @@ public class Bridge implements Serializable {
 		this.used = false;
 	}
 	
+	/**
+	 * Get the duration in the schedulable as in milliseconds
+	 * 
+	 * @return Duration in milliseconds
+	 * 
+	 */
 	public long getDurationMillis() {
 		return edge.getDuration().getMillis();
 	}
