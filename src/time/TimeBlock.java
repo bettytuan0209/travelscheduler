@@ -26,7 +26,7 @@ public class TimeBlock implements Serializable {
 	private int index;
 	private Location startLocation;
 	private Location endLocation;
-	private Timeline scheduledActivities;
+	private Timeline timeline;
 	
 	/**
 	 * Constructor with all of the fields except the timeline, which will be
@@ -47,7 +47,7 @@ public class TimeBlock implements Serializable {
 		this.index = index;
 		this.startLocation = startLocation;
 		this.endLocation = endLocation;
-		this.scheduledActivities = new Timeline(new Interval(timespan));
+		this.timeline = new Timeline(new Interval(timespan));
 		
 	}
 	
@@ -61,7 +61,7 @@ public class TimeBlock implements Serializable {
 	 * @return True if successfully scheduled. False if otherwise
 	 */
 	public boolean schedule(DateTime startTime, Schedulable schedulable) {
-		return scheduledActivities.schedule(startTime, schedulable);
+		return timeline.schedule(startTime, schedulable);
 	}
 	
 	/**
@@ -80,10 +80,10 @@ public class TimeBlock implements Serializable {
 		// try to schedule it
 		if (schedulable instanceof Activity) {
 			Activity activity = (Activity) schedulable;
-			return scheduledActivities.scheduleAfter(startTime,
+			return timeline.scheduleAfter(startTime,
 					activity.legalTimeline, activity);
 		} else {
-			return scheduledActivities.scheduleAfter(startTime, schedulable);
+			return timeline.scheduleAfter(startTime, schedulable);
 		}
 	}
 	
@@ -119,10 +119,10 @@ public class TimeBlock implements Serializable {
 			return false;
 		}
 		
-		DateTime beforeInterval = scheduledActivities.getInterval().getStart()
+		DateTime beforeInterval = timeline.getInterval().getStart()
 				.minus(1);
-		if (!scheduledActivities.hasScheduleStart(beforeInterval)
-				&& scheduledActivities.schedule.put(beforeInterval, activity) == null) {
+		if (!timeline.hasScheduleStart(beforeInterval)
+				&& timeline.schedule.put(beforeInterval, activity) == null) {
 			return true;
 		} else {
 			return false;
@@ -154,11 +154,11 @@ public class TimeBlock implements Serializable {
 		if (activity.getDuration().getMillis() > 1) {
 			return false;
 		}
-		DateTime last = scheduledActivities.lastEndTime();
-		if (scheduledActivities.hasScheduleStart(last)) {
+		DateTime last = timeline.lastEndTime();
+		if (timeline.hasScheduleStart(last)) {
 			last = last.plus(1);
 		}
-		if (scheduledActivities.schedule.put(last, activity) == null) {
+		if (timeline.schedule.put(last, activity) == null) {
 			return true;
 		} else {
 			return false;
@@ -176,7 +176,7 @@ public class TimeBlock implements Serializable {
 			if (index == other.index
 					&& startLocation.equals(other.startLocation)
 					&& endLocation.equals(other.endLocation)
-					&& scheduledActivities.equals(other.scheduledActivities)) {
+					&& timeline.equals(other.timeline)) {
 				return true;
 			}
 			
@@ -191,21 +191,21 @@ public class TimeBlock implements Serializable {
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder().append(index).append(startLocation)
-				.append(endLocation).append(scheduledActivities).toHashCode();
+				.append(endLocation).append(timeline).toHashCode();
 	}
 	
 	/************************* Getters *****************************/
 	
 	public Interval getInterval() {
-		return scheduledActivities.interval;
+		return timeline.interval;
 	}
 	
 	public DateTime lastEndTime() {
-		return scheduledActivities.lastEndTime();
+		return timeline.lastEndTime();
 	}
 	
 	public Map.Entry<DateTime, Schedulable> getLastScheduled() {
-		return scheduledActivities.schedule.lastEntry();
+		return timeline.schedule.lastEntry();
 	}
 	
 	public int getIndex() {
@@ -220,8 +220,8 @@ public class TimeBlock implements Serializable {
 		return endLocation;
 	}
 	
-	public Timeline getScheduledActivities() {
-		return scheduledActivities;
+	public Timeline getTimeline() {
+		return timeline;
 	}
 	
 }

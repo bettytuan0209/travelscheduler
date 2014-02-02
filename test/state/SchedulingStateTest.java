@@ -66,7 +66,7 @@ public class SchedulingStateTest {
 		for (int i = 0; i < successors.size(); i++) {
 			SchedulingState child = (SchedulingState) successors.get(i);
 			TreeMap<DateTime, Schedulable> map = child.getTb()
-					.getScheduledActivities().getSchedule();
+					.getTimeline().getSchedule();
 			switch ((int) child.getTb().lastEndTime().getMillis()) {
 			case 5:
 				// 0 - 0 start, 1 - 4 transportation, 4 - 5 park
@@ -131,7 +131,7 @@ public class SchedulingStateTest {
 		for (int i = 0; i < successors.size(); i++) {
 			SchedulingState child = (SchedulingState) successors.get(i);
 			TreeMap<DateTime, Schedulable> map = child.getTb()
-					.getScheduledActivities().getSchedule();
+					.getTimeline().getSchedule();
 			switch ((int) child.getTb().lastEndTime().getMillis()) {
 			case 15:
 				// 0 - 0 start, 1 - 5 transportation, 5 - 7 museum
@@ -176,7 +176,7 @@ public class SchedulingStateTest {
 		for (int i = 0; i < successors.size(); i++) {
 			SchedulingState child = (SchedulingState) successors.get(i);
 			TreeMap<DateTime, Schedulable> map = child.getTb()
-					.getScheduledActivities().getSchedule();
+					.getTimeline().getSchedule();
 			
 			// 0 - 0 start, 1 - 5 transportation, 5 - 7 museum
 			// 7 - 14 transportation, 14 - 15 park
@@ -207,7 +207,7 @@ public class SchedulingStateTest {
 		for (int i = 0; i < successors.size(); i++) {
 			SchedulingState child = (SchedulingState) successors.get(i);
 			TreeMap<DateTime, Schedulable> map = child.getTb()
-					.getScheduledActivities().getSchedule();
+					.getTimeline().getSchedule();
 			
 			// 0 - 0 start, 1 - 5 transportation, 5 - 7 museum
 			// 7 - 14 transportation, 14 - 15 park
@@ -252,7 +252,7 @@ public class SchedulingStateTest {
 		for (int i = 0; i < successors.size(); i++) {
 			SchedulingState child = (SchedulingState) successors.get(i);
 			TreeMap<DateTime, Schedulable> map = child.getTb()
-					.getScheduledActivities().getSchedule();
+					.getTimeline().getSchedule();
 			switch ((int) child.getTb().lastEndTime().getMillis()) {
 			case 13:
 				// 7 - 7 start, 8 - 11 transportation, 11 - 13 beach
@@ -297,7 +297,7 @@ public class SchedulingStateTest {
 		for (int i = 0; i < successors.size(); i++) {
 			SchedulingState child = (SchedulingState) successors.get(i);
 			TreeMap<DateTime, Schedulable> map = child.getTb()
-					.getScheduledActivities().getSchedule();
+					.getTimeline().getSchedule();
 			switch ((int) child.getTb().lastEndTime().getMillis()) {
 			case 16:
 				// 7 - 7 start, 8 - 9 transportation, 9 - 12 temple
@@ -347,7 +347,7 @@ public class SchedulingStateTest {
 		for (int i = 0; i < successors.size(); i++) {
 			SchedulingState child = (SchedulingState) successors.get(i);
 			TreeMap<DateTime, Schedulable> map = child.getTb()
-					.getScheduledActivities().getSchedule();
+					.getTimeline().getSchedule();
 			switch ((int) child.getTb().lastEndTime().getMillis()) {
 			case 20:
 				// 0 - 0 start, 1 - 3 transportation, 15 - 20 skiing

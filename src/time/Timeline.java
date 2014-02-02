@@ -380,7 +380,7 @@ public class Timeline implements Serializable {
 	/**
 	 * Get number of scheduled schedulables on the timeline
 	 * 
-	 * @return number of scheduled activities
+	 * @return number of schedulables on the timeline
 	 */
 	public int getNumScheduled() {
 		return schedule.size();

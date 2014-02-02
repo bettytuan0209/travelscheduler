@@ -53,13 +53,13 @@ public class ClusterManagerTest {
 		for (TimeBlock result : results) {
 			switch (result.getIndex()) {
 			case 0:
-				Assert.assertEquals(7, result.getScheduledActivities()
+				Assert.assertEquals(7, result.getTimeline()
 						.getNumScheduled());
 				Debugger.printSchedulables(result);
 				
 				break;
 			case 1:
-				Assert.assertEquals(5, result.getScheduledActivities()
+				Assert.assertEquals(5, result.getTimeline()
 						.getNumScheduled());
 				Debugger.printSchedulables(result);
 				break;

@@ -32,7 +32,7 @@ public class Debugger {
 	public static void printSchedulables(TimeBlock tb) {
 		System.out.println("==================== TimeBlock " + tb.getIndex()
 				+ " ====================");
-		printSchedulables(tb.getScheduledActivities());
+		printSchedulables(tb.getTimeline());
 	}
 	
 	/**

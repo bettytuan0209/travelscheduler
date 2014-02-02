@@ -92,7 +92,7 @@ public class SchedulerTest {
 		ArrayList<TimeBlock> tbs = Scheduler.autoScheduleAll(graph, notMatched);
 		Assert.assertEquals(1, tbs.size());
 		Assert.assertEquals(SchedulingStateTest.tb1, tbs.get(0));
-		Assert.assertEquals(0, tbs.get(0).getScheduledActivities()
+		Assert.assertEquals(0, tbs.get(0).getTimeline()
 				.getSchedule().size());
 	}
 	

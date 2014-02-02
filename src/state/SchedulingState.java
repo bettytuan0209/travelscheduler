@@ -66,7 +66,7 @@ public class SchedulingState implements SearchState,
 	public ArrayList<SearchState> successors() {
 		ArrayList<SearchState> successors = new ArrayList<SearchState>();
 		
-		Timeline scheduledActivities = tb.getScheduledActivities();
+		Timeline scheduledActivities = tb.getTimeline();
 		
 		// if nothing scheduled yet, schedule startLocation
 		if (scheduledActivities.isEmpty()
@@ -85,7 +85,7 @@ public class SchedulingState implements SearchState,
 					tb.getEndLocation());
 			
 			TreeMap<DateTime, Schedulable> schedule = tb
-					.getScheduledActivities().getSchedule();
+					.getTimeline().getSchedule();
 			Schedulable last = schedule.lastEntry().getValue();
 			if (last instanceof Activity) {
 				SchedulingState newState = this.clone();

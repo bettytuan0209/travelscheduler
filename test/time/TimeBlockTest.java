@@ -80,11 +80,11 @@ public class TimeBlockTest {
 				new LegalTime(new Duration(5), true)));
 		Assert.assertTrue(legalTimeline.schedule(new DateTime(20),
 				new LegalTime(new Duration(10), true)));
-		Assert.assertTrue(tb.getScheduledActivities().schedule(new DateTime(2),
+		Assert.assertTrue(tb.getTimeline().schedule(new DateTime(2),
 				new Activity(new Duration(2))));
-		Assert.assertTrue(tb.getScheduledActivities().schedule(new DateTime(8),
+		Assert.assertTrue(tb.getTimeline().schedule(new DateTime(8),
 				new Activity(new Duration(4))));
-		Assert.assertTrue(tb.getScheduledActivities().schedule(
+		Assert.assertTrue(tb.getTimeline().schedule(
 				new DateTime(18), new Activity(new Duration(3))));
 		Assert.assertEquals(new DateTime(18), tb.getLastScheduled().getKey());
 		Assert.assertEquals(new Activity(new Duration(3)), tb
@@ -94,17 +94,17 @@ public class TimeBlockTest {
 		// no bound
 		Assert.assertTrue(tb.scheduleAfter(activity));
 		Assert.assertEquals(activity,
-				(Activity) tb.getScheduledActivities().schedule
+				(Activity) tb.getTimeline().schedule
 						.get(new DateTime(12)));
 		
 		// with bound
 		Assert.assertTrue(tb.scheduleAfter(new DateTime(13), activity));
 		Assert.assertEquals(activity,
-				(Activity) tb.getScheduledActivities().schedule
+				(Activity) tb.getTimeline().schedule
 						.get(new DateTime(21)));
 		Assert.assertTrue(tb.scheduleAfter(new DateTime(28), activity));
 		Assert.assertEquals(activity,
-				(Activity) tb.getScheduledActivities().schedule
+				(Activity) tb.getTimeline().schedule
 						.get(new DateTime(28)));
 		
 		// no legalTime
@@ -112,14 +112,14 @@ public class TimeBlockTest {
 		Transportation transport = new Transportation(new Duration(2));
 		tb = new TimeBlock(1, new Interval(1, 30), new Location(1, 1),
 				new Location(2, 2));
-		Assert.assertTrue(tb.getScheduledActivities().schedule(new DateTime(3),
+		Assert.assertTrue(tb.getTimeline().schedule(new DateTime(3),
 				new Activity(new Duration(2))));
 		Assert.assertTrue(tb.scheduleAfter(new DateTime(3), transport));
 		Assert.assertEquals(transport, (Transportation) tb
-				.getScheduledActivities().schedule.get(new DateTime(5)));
+				.getTimeline().schedule.get(new DateTime(5)));
 		Assert.assertTrue(tb.scheduleAfter(transport));
 		Assert.assertEquals(transport, (Transportation) tb
-				.getScheduledActivities().schedule.get(new DateTime(1)));
+				.getTimeline().schedule.get(new DateTime(1)));
 		
 	}
 	
@@ -136,7 +136,7 @@ public class TimeBlockTest {
 		// legal
 		activity = new Activity("", new Duration(1), new Location(1, 2));
 		Assert.assertTrue(tb.scheduleBeforeTb(activity));
-		Map.Entry<DateTime, Schedulable> entry = tb.getScheduledActivities().schedule
+		Map.Entry<DateTime, Schedulable> entry = tb.getTimeline().schedule
 				.firstEntry();
 		Assert.assertEquals(new DateTime(0), entry.getKey());
 		Assert.assertEquals(activity, entry.getValue());
@@ -145,7 +145,7 @@ public class TimeBlockTest {
 		Activity activity2 = new Activity("", new Duration(0), new Location(1,
 				2));
 		Assert.assertFalse(tb.scheduleBeforeTb(activity2));
-		entry = tb.getScheduledActivities().schedule.firstEntry();
+		entry = tb.getTimeline().schedule.firstEntry();
 		Assert.assertEquals(new DateTime(0), entry.getKey());
 		Assert.assertEquals(activity, entry.getValue());
 		
@@ -166,7 +166,7 @@ public class TimeBlockTest {
 		// legal
 		activity = new Activity("", new Duration(1), new Location(1, 2));
 		Assert.assertTrue(tb.scheduleAfterTb(activity));
-		Map.Entry<DateTime, Schedulable> entry = tb.getScheduledActivities().schedule
+		Map.Entry<DateTime, Schedulable> entry = tb.getTimeline().schedule
 				.lastEntry();
 		Assert.assertEquals(new DateTime(7), entry.getKey());
 		Assert.assertEquals(activity, entry.getValue());
@@ -181,9 +181,9 @@ public class TimeBlockTest {
 		Assert.assertEquals(new DateTime(1), tb.lastEndTime());
 		
 		// 3 - 3, 6 - 8
-		Assert.assertTrue(tb.getScheduledActivities().schedule(new DateTime(3),
+		Assert.assertTrue(tb.getTimeline().schedule(new DateTime(3),
 				new Activity(new Duration(3))));
-		Assert.assertTrue(tb.getScheduledActivities().schedule(new DateTime(6),
+		Assert.assertTrue(tb.getTimeline().schedule(new DateTime(6),
 				new Activity(new Duration(2))));
 		
 		Assert.assertEquals(new DateTime(8), tb.lastEndTime());

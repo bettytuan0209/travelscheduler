@@ -100,13 +100,13 @@ public class ASTTBMatcherTest {
 		// Check TB2
 		Assert.assertEquals(2, schedule.get(0).getIndex());
 		Assert.assertEquals(skiing.title,
-				((Activity) (schedule.get(0).getScheduledActivities()
+				((Activity) (schedule.get(0).getTimeline()
 						.getSchedule().get(new DateTime(20)))).title);
 		
 		// Check TB1
 		Assert.assertEquals(1, schedule.get(1).getIndex());
 		Assert.assertEquals(tv.title,
-				((Activity) (schedule.get(1).getScheduledActivities()
+				((Activity) (schedule.get(1).getTimeline()
 						.getSchedule().get(new DateTime(9)))).title);
 		
 	}

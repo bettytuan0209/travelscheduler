@@ -58,7 +58,7 @@ public class TreeSearchTest {
 	
 	// Allow other tests to call
 	public static void testTb1Goal(TimeBlock tb) {
-		TreeMap<DateTime, Schedulable> map = tb.getScheduledActivities()
+		TreeMap<DateTime, Schedulable> map = tb.getTimeline()
 				.getSchedule();
 		
 		// 0 - 0 start, 1 - 5 transportation, 5 - 7 museum
@@ -88,7 +88,7 @@ public class TreeSearchTest {
 	
 	// Allow other tests to call
 	public static void testTb2Goal(TimeBlock tb) {
-		TreeMap<DateTime, Schedulable> map = tb.getScheduledActivities()
+		TreeMap<DateTime, Schedulable> map = tb.getTimeline()
 				.getSchedule();
 		
 		// 7 - 7 start, 8 - 9 transportation, 9 - 12 temple
@@ -118,7 +118,7 @@ public class TreeSearchTest {
 	}
 	
 	public static void testTb3Goal(TimeBlock tb) {
-		TreeMap<DateTime, Schedulable> map = tb.getScheduledActivities()
+		TreeMap<DateTime, Schedulable> map = tb.getTimeline()
 				.getSchedule();
 		
 		// 0 - 0 start, 1 - 6 transportation, 6 - 10 hiking
