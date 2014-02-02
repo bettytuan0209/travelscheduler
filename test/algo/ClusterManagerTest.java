@@ -46,8 +46,8 @@ public class ClusterManagerTest {
 	
 	@Test
 	public void testClustering() {
-		ArrayList<TimeBlock> results = ClusterManager.clustering(graph,
-				allActivities, tbs);
+		ClusterManager clusterManager = new ClusterManager(graph, tbs);
+		ArrayList<TimeBlock> results = clusterManager.clustering(allActivities);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(2, results.size());
 		for (TimeBlock result : results) {
@@ -73,27 +73,29 @@ public class ClusterManagerTest {
 		clusters.clear();
 		clusters.add(abc);
 		clusters.add(de);
-		Assert.assertEquals(abc, ClusterManager.findAST(clusters, activityA));
-		Assert.assertEquals(abc, ClusterManager.findAST(clusters, activityB));
-		Assert.assertEquals(abc, ClusterManager.findAST(clusters, activityC));
-		Assert.assertEquals(de, ClusterManager.findAST(clusters, activityD));
-		Assert.assertEquals(de, ClusterManager.findAST(clusters, activityE));
+		ClusterManager clusterManager = new ClusterManager(graph, tbs);
+		Assert.assertEquals(abc, clusterManager.findAST(clusters, activityA));
+		Assert.assertEquals(abc, clusterManager.findAST(clusters, activityB));
+		Assert.assertEquals(abc, clusterManager.findAST(clusters, activityC));
+		Assert.assertEquals(de, clusterManager.findAST(clusters, activityD));
+		Assert.assertEquals(de, clusterManager.findAST(clusters, activityE));
 	}
 	
 	@Test
 	public void testInBlcklist() {
+		ClusterManager clusterManager = new ClusterManager(graph, tbs);
 		
 		Set<ActivitySpanningTree> blackcluster = new HashSet<ActivitySpanningTree>();
 		
 		// Cluster: ABC, DE. Blacklist empty => false
 		Assert.assertTrue(clusters.add(abc));
 		Assert.assertTrue(clusters.add(de));
-		Assert.assertFalse(ClusterManager.inBlacklist(clusters, blacklist));
+		Assert.assertFalse(clusterManager.inBlacklist(clusters, blacklist));
 		
 		// Cluster: ABC, DE. Blacklist ABC => true
 		Assert.assertTrue(blackcluster.add(abc));
 		Assert.assertTrue(blacklist.add(blackcluster));
-		Assert.assertTrue(ClusterManager.inBlacklist(clusters, blacklist));
+		Assert.assertTrue(clusterManager.inBlacklist(clusters, blacklist));
 		
 		// Cluster: ABC. Blacklist: ABC, DE => false
 		clusters.clear();
@@ -103,18 +105,18 @@ public class ClusterManagerTest {
 		Assert.assertTrue(blackcluster.add(de));
 		blacklist.clear();
 		Assert.assertTrue(blacklist.add(blackcluster));
-		Assert.assertFalse(ClusterManager.inBlacklist(clusters, blacklist));
+		Assert.assertFalse(clusterManager.inBlacklist(clusters, blacklist));
 		
 		// Cluster: ABC. Blacklist: ABC, DE // ABC => true
 		blackcluster = new HashSet<ActivitySpanningTree>();
 		Assert.assertTrue(blackcluster.add(abc));
 		blacklist.add(blackcluster);
-		Assert.assertTrue(ClusterManager.inBlacklist(clusters, blacklist));
+		Assert.assertTrue(clusterManager.inBlacklist(clusters, blacklist));
 		
 		// Cluster is ABC, DE. Blacklist cluster is ABC, DE => true
 		Assert.assertTrue(clusters.add(de));
 		Assert.assertTrue(blacklist.remove(blackcluster));
-		Assert.assertTrue(ClusterManager.inBlacklist(clusters, blacklist));
+		Assert.assertTrue(clusterManager.inBlacklist(clusters, blacklist));
 		
 	}
 	
