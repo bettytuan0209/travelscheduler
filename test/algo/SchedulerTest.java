@@ -16,7 +16,6 @@ import schedulable.Transportation;
 import search.TreeSearchTest;
 import state.SchedulingStateTest;
 import time.TimeBlock;
-import util.Debugger;
 import activities.ActivitySpanningTree;
 import activities.Bridge;
 import activities.Location;
@@ -67,7 +66,7 @@ public class SchedulerTest {
 		ArrayList<TimeBlock> tbs = Scheduler.autoScheduleAll(graph, pairs);
 		Assert.assertNotNull(tbs);
 		for (TimeBlock tb : tbs) {
-			Debugger.printSchedulables(tb);
+			System.out.println(tb);
 			System.out.println();
 			switch (tb.getIndex()) {
 			case 1:
@@ -92,8 +91,7 @@ public class SchedulerTest {
 		ArrayList<TimeBlock> tbs = Scheduler.autoScheduleAll(graph, notMatched);
 		Assert.assertEquals(1, tbs.size());
 		Assert.assertEquals(SchedulingStateTest.tb1, tbs.get(0));
-		Assert.assertEquals(0, tbs.get(0).getTimeline()
-				.getSchedule().size());
+		Assert.assertEquals(0, tbs.get(0).getTimeline().getSchedule().size());
 	}
 	
 	private static ActivitySpanningTree astWithActivities(int index,

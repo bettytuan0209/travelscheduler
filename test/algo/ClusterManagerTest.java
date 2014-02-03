@@ -17,7 +17,6 @@ import schedulable.LegalTime;
 import schedulable.Transportation;
 import time.LegalTimeline;
 import time.TimeBlock;
-import util.Debugger;
 import activities.ActivitySpanningTree;
 import activities.Bridge;
 import activities.Location;
@@ -53,15 +52,13 @@ public class ClusterManagerTest {
 		for (TimeBlock result : results) {
 			switch (result.getIndex()) {
 			case 0:
-				Assert.assertEquals(7, result.getTimeline()
-						.getNumScheduled());
-				Debugger.printSchedulables(result);
+				Assert.assertEquals(7, result.getTimeline().getNumScheduled());
+				System.out.println(result);
 				
 				break;
 			case 1:
-				Assert.assertEquals(5, result.getTimeline()
-						.getNumScheduled());
-				Debugger.printSchedulables(result);
+				Assert.assertEquals(5, result.getTimeline().getNumScheduled());
+				System.out.println(result);
 				break;
 			
 			}

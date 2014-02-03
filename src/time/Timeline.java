@@ -3,6 +3,7 @@ package time;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -10,8 +11,10 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 
+import schedulable.Activity;
 import schedulable.LegalTime;
 import schedulable.Schedulable;
+import schedulable.Transportation;
 import util.DeepCopy;
 import util.Util;
 
@@ -442,6 +445,39 @@ public class Timeline implements Serializable {
 	@SuppressWarnings("unchecked")
 	public TreeMap<DateTime, Schedulable> getSchedule() {
 		return (TreeMap<DateTime, Schedulable>) DeepCopy.copy(schedule);
+	}
+	
+	/**
+	 * Iterate through a timeline and print out all the schedulables
+	 * 
+	 * @return The textual representation of this timeline
+	 */
+	@Override
+	public String toString() {
+		String result = "";
+		Set<Map.Entry<DateTime, Schedulable>> entries = getSchedule()
+				.entrySet();
+		for (Map.Entry<DateTime, Schedulable> entry : entries) {
+			
+			// print start time
+			result += entry.getKey().getMillis() + " - "
+					+ Util.getEndTime(entry).getMillis() + ": ";
+			
+			// print schedulable content
+			Schedulable value = entry.getValue();
+			if (value instanceof Transportation) {
+				result += "transportation\n";
+			} else if (value instanceof LegalTime) {
+				result += "LegalTime\n";
+			} else if (value instanceof Activity) {
+				result += ((Activity) value).title + "\n";
+			} else {
+				throw new ClassCastException(
+						"Cannot recognize schedulable class type");
+			}
+			
+		}
+		return result;
 	}
 	
 	/**

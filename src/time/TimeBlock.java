@@ -80,8 +80,8 @@ public class TimeBlock implements Serializable {
 		// try to schedule it
 		if (schedulable instanceof Activity) {
 			Activity activity = (Activity) schedulable;
-			return timeline.scheduleAfter(startTime,
-					activity.legalTimeline, activity);
+			return timeline.scheduleAfter(startTime, activity.legalTimeline,
+					activity);
 		} else {
 			return timeline.scheduleAfter(startTime, schedulable);
 		}
@@ -119,8 +119,7 @@ public class TimeBlock implements Serializable {
 			return false;
 		}
 		
-		DateTime beforeInterval = timeline.getInterval().getStart()
-				.minus(1);
+		DateTime beforeInterval = timeline.getInterval().getStart().minus(1);
 		if (!timeline.hasScheduleStart(beforeInterval)
 				&& timeline.schedule.put(beforeInterval, activity) == null) {
 			return true;
@@ -163,6 +162,21 @@ public class TimeBlock implements Serializable {
 		} else {
 			return false;
 		}
+	}
+	
+	/**
+	 * Print out the index of the timeblock and then iterate through a timeline
+	 * and print out all the schedulables
+	 * 
+	 * @return The textual representation of this timeblock
+	 */
+	@Override
+	public String toString() {
+		String result = "";
+		result += "==================== TimeBlock " + index
+				+ " ====================\n";
+		result += timeline.toString();
+		return result;
 	}
 	
 	/**

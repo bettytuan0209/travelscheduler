@@ -155,4 +155,14 @@ public class Activity extends Schedulable implements Serializable {
 		
 	}
 	
+	@Override
+	public String toString() {
+		String result = "Activity ";
+		result += title + "; ";
+		result += "duration " + duration + "; ";
+		result += "location " + location + "; ";
+		result += "legal times " + legalTimeline.toString() + ".";
+		return result;
+	}
+	
 }

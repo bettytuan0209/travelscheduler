@@ -17,7 +17,6 @@ import schedulable.Transportation;
 import state.MatchingStateTest;
 import time.LegalTimeline;
 import time.TimeBlock;
-import util.Debugger;
 import activities.ActivitySpanningTree;
 import activities.Location;
 
@@ -45,9 +44,9 @@ public class ASTTBMatcherTest {
 		ArrayList<TimeBlock> schedule = ASTTBMatcher.matching(
 				new SimpleWeightedGraph<Location, Transportation>(
 						Transportation.class), asts, MatchingStateTest.tbs);
-		Debugger.printSchedulables(schedule.get(0));
-		Debugger.printSchedulables(schedule.get(1));
-		Debugger.printSchedulables(schedule.get(2));
+		System.out.println(schedule.get(0));
+		System.out.println(schedule.get(1));
+		System.out.println(schedule.get(2));
 		
 	}
 	
@@ -99,15 +98,13 @@ public class ASTTBMatcherTest {
 		
 		// Check TB2
 		Assert.assertEquals(2, schedule.get(0).getIndex());
-		Assert.assertEquals(skiing.title,
-				((Activity) (schedule.get(0).getTimeline()
-						.getSchedule().get(new DateTime(20)))).title);
+		Assert.assertEquals(skiing.title, ((Activity) (schedule.get(0)
+				.getTimeline().getSchedule().get(new DateTime(20)))).title);
 		
 		// Check TB1
 		Assert.assertEquals(1, schedule.get(1).getIndex());
-		Assert.assertEquals(tv.title,
-				((Activity) (schedule.get(1).getTimeline()
-						.getSchedule().get(new DateTime(9)))).title);
+		Assert.assertEquals(tv.title, ((Activity) (schedule.get(1)
+				.getTimeline().getSchedule().get(new DateTime(9)))).title);
 		
 	}
 	
