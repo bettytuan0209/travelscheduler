@@ -41,6 +41,15 @@ public class ClusterManagerTest {
 				.println("*********************************************************");
 		System.out.println();
 		initHelper();
+		
+		System.out.println("Test case initialization complete....");
+		
+		System.out.println("# ACTIVITIES:");
+		for (Activity activity : allActivities) {
+			System.out.println(activity);
+		}
+		System.out.println();
+		
 	}
 	
 	@Test

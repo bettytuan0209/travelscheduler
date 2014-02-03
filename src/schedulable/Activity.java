@@ -159,7 +159,7 @@ public class Activity extends Schedulable implements Serializable {
 	public String toString() {
 		String result = "Activity ";
 		result += title + "; ";
-		result += "duration " + duration + "; ";
+		result += "duration " + duration.getMillis() + "; ";
 		result += "location " + location + "; ";
 		result += "legal times " + legalTimeline.toString() + ".";
 		return result;

@@ -28,6 +28,11 @@ public class Location implements Serializable {
 		this.longitude = longitude;
 	}
 	
+	@Override
+	public String toString() {
+		return "(" + latitude + "," + longitude + ")";
+	}
+	
 	/**
 	 * Overrides the object equals() method. Checks all fields to see if
 	 * equals(). Consistent with hashCode()

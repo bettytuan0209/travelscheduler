@@ -2,6 +2,7 @@ package time;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.joda.time.DateTime;
@@ -316,4 +317,24 @@ public class LegalTimeline extends Timeline {
 			
 		}
 	}
+	
+	@Override
+	public String toString() {
+		String result = "";
+		Set<Map.Entry<DateTime, Schedulable>> entries = getSchedule()
+				.entrySet();
+		for (Map.Entry<DateTime, Schedulable> entry : entries) {
+			
+			// print start time
+			if (!result.equals("")) {
+				result += ", ";
+			}
+			
+			result += entry.getKey().getMillis() + " - "
+					+ Util.getEndTime(entry).getMillis();
+			
+		}
+		return result;
+	}
+	
 }
