@@ -32,6 +32,29 @@ public class ASTTBMatcherTest {
 				.println("**************************************************");
 		System.out.println();
 		
+		MatchingStateTest.initHelper();
+		System.out.println("Test case initialization complete....");
+		System.out.println();
+		System.out.println("#TIMEBLOCKS");
+		for (TimeBlock tb : MatchingStateTest.tbs) {
+			System.out.println("TimeBlock " + tb.getIndex() + ": "
+					+ tb.getInterval().getStartMillis() + "-"
+					+ tb.getInterval().getEndMillis());
+		}
+		System.out.println();
+		
+		System.out.println("#ACTIVITYSPANNINGTREES:");
+		Set<ActivitySpanningTree> asts = MatchingStateTest.asts;
+		for (ActivitySpanningTree ast : asts) {
+			System.out.println("Index: " + ast.getIndex() + ".");
+			for (Activity activity : ast.getActivities()) {
+				System.out.println("\t" + activity);
+			}
+			
+			System.out.println();
+		}
+		System.out.println();
+		
 	}
 	
 	/**
@@ -39,7 +62,6 @@ public class ASTTBMatcherTest {
 	 */
 	@Test
 	public void testMatching1() {
-		MatchingStateTest.initHelper();
 		Set<ActivitySpanningTree> asts = MatchingStateTest.asts;
 		ArrayList<TimeBlock> schedule = ASTTBMatcher.matching(
 				new SimpleWeightedGraph<Location, Transportation>(

@@ -43,7 +43,7 @@ public class ClusterManagerTest {
 		initHelper();
 		
 		System.out.println("Test case initialization complete....");
-		
+		System.out.println();
 		System.out.println("# ACTIVITIES:");
 		for (Activity activity : allActivities) {
 			System.out.println(activity);
