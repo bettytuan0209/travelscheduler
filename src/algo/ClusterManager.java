@@ -116,7 +116,7 @@ public class ClusterManager {
 			}
 		});
 		
-		System.out.println("Bridges: ");
+		System.out.println("# BRIDGES: ");
 		for (Bridge bridge : bridges) {
 			System.out.println(bridge);
 		}
