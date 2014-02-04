@@ -116,6 +116,12 @@ public class ClusterManager {
 			}
 		});
 		
+		System.out.println("Bridges: ");
+		for (Bridge bridge : bridges) {
+			System.out.println(bridge);
+		}
+		System.out.println();
+		
 		// call a recursive function to cluster
 		return clusterInRange(bridges);
 		
